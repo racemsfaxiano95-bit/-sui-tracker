@@ -12,6 +12,8 @@ header{display:flex;justify-content:space-between;align-items:center;margin:8px 
 .brand{font-size:21px;font-weight:800}
 .live{background:#102c43;border:1px solid var(--line);border-radius:22px;padding:8px 12px;font:13px monospace}
 .dot{display:inline-block;width:7px;height:7px;background:var(--green);border-radius:50%;margin-right:5px}
+.dot.ws-live{animation:pulseDot 1.4s infinite}
+@keyframes pulseDot{0%,100%{opacity:1}50%{opacity:.3}}
 .card{background:var(--card);border:1px solid var(--line);border-radius:17px;padding:17px;margin-bottom:14px}
 h2{font-size:15px;margin:0 0 14px}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
@@ -75,7 +77,7 @@ nav button.active{color:var(--blue)}
 <div class="stat"><small class="muted">Position Value</small><b id="pos">$0</b></div>
 </div></div>
 <div class="card">
-<h2>Market Chart</h2>
+<h2>Market Chart <span id="wsStatus" class="mono" style="font-size:11px;color:var(--muted);font-weight:400"></span></h2>
 <div class="tabs">
 <button class="tab active" onclick="tf('15m',this)">15m</button>
 <button class="tab" onclick="tf('1h',this)">1H</button>
@@ -213,7 +215,7 @@ return`<div class="asset ${k===selected?'active':''}" onclick="select('${k}')">
 </div>`;
 }).join('');
 }
-function select(k){selected=k;renderAssets();renderPortfolio();loadChart();}
+function select(k){selected=k;renderAssets();renderPortfolio();loadChart();connectWs();}
 function renderPortfolio(){
 let t=total(selected);
 let p=prices[selected]||0;
@@ -328,7 +330,7 @@ $('marketList').innerHTML =
     </div>
   `).join('');
 }
-function tf(x,b){interval=x;document.querySelectorAll('.tab').forEach(q=>q.classList.remove('active'));b.classList.add('active');loadChart();}
+function tf(x,b){interval=x;document.querySelectorAll('.tab').forEach(q=>q.classList.remove('active'));b.classList.add('active');loadChart();connectWs();}
 async function loadChart(){
 try{
 let r=await fetch('https://api.binance.com/api/v3/klines?symbol='+A[selected][2]+'&interval='+interval+'&limit=100',{cache:'no-store'});
@@ -337,6 +339,71 @@ candles=d.map(x=>({t:+x[0],o:+x[1],h:+x[2],l:+x[3],c:+x[4],v:+x[5]}));
 draw();
 }catch(e){candles=[];draw();}
 }
+
+/* Live WebSocket kline stream: makes the chart move in real time,
+   the same way Binance's own chart does. */
+let ws=null;
+let wsReconnectTimer=null;
+function setWsStatus(state){
+  const el=$('wsStatus');
+  if(!el) return;
+  const dot=$('status').previousElementSibling;
+  if(state==='live'){
+    el.textContent='● live stream';
+    el.style.color='var(--green)';
+    if(dot) dot.classList.add('ws-live');
+  } else if(state==='connecting'){
+    el.textContent='connecting…';
+    el.style.color='var(--muted)';
+    if(dot) dot.classList.remove('ws-live');
+  } else {
+    el.textContent='live stream unavailable — falling back to periodic refresh';
+    el.style.color='var(--red)';
+    if(dot) dot.classList.remove('ws-live');
+  }
+}
+function closeWs(){
+  if(wsReconnectTimer){ clearTimeout(wsReconnectTimer); wsReconnectTimer=null; }
+  if(ws){ try{ ws.onclose=null; ws.close(); }catch(e){} ws=null; }
+}
+function connectWs(){
+  closeWs();
+  if(!('WebSocket' in window)) { setWsStatus('off'); return; }
+  const symbol=A[selected][2].toLowerCase();
+  const iv=interval;
+  const streamUrl='wss://stream.binance.com:9443/ws/'+symbol+'@kline_'+iv;
+  setWsStatus('connecting');
+  try{
+    ws=new WebSocket(streamUrl);
+    ws.onopen=()=>{ setWsStatus('live'); };
+    ws.onmessage=(evt)=>{
+      try{
+        const msg=JSON.parse(evt.data);
+        const k=msg.k;
+        if(!k) return;
+        const candle={t:+k.t,o:+k.o,h:+k.h,l:+k.l,c:+k.c,v:+k.v};
+        if(candles.length && candles[candles.length-1].t===candle.t){
+          candles[candles.length-1]=candle;
+        }else{
+          candles.push(candle);
+          if(candles.length>100) candles.shift();
+        }
+        prices[selected]=candle.c;
+        draw();
+        if(document.getElementById('home').classList.contains('active')){
+          renderPortfolio();
+          renderAssets();
+        }
+      }catch(e){}
+    };
+    ws.onerror=()=>{ setWsStatus('off'); };
+    ws.onclose=()=>{
+      setWsStatus('off');
+      wsReconnectTimer=setTimeout(()=>{ if(document.getElementById('home').classList.contains('active')) connectWs(); },5000);
+    };
+  }catch(e){ setWsStatus('off'); }
+}
+
 function draw(){
 let c=$('chart');
 let x=c.getContext('2d');
@@ -347,24 +414,50 @@ c.width=w*d;c.height=h*d;
 x.setTransform(d,0,0,d,0,0);
 x.clearRect(0,0,w,h);
 if(!candles.length){x.fillStyle='#8da8b7';x.textAlign='center';x.fillText('Chart data unavailable',w/2,h/2);return;}
+const rightPad=54;
 let hi=Math.max(...candles.map(a=>a.h));
 let lo=Math.min(...candles.map(a=>a.l));
-let rg=hi-lo||1;
-let step=w/candles.length;
+let rg=(hi-lo)||1;
+hi+=rg*0.06; lo-=rg*0.06; rg=(hi-lo)||1;
+let plotW=w-rightPad;
+let step=plotW/candles.length;
 let y=v=>8+(hi-v)/rg*(h-65);
+
 x.strokeStyle='rgba(141,168,183,.12)';
+x.fillStyle='#8da8b7';
+x.font='10px monospace';
+x.textAlign='left';
 for(let i=0;i<5;i++){
-let yy=8+i*(h-65)/4;
-x.beginPath();x.moveTo(0,yy);x.lineTo(w,yy);x.stroke();
+  let yy=8+i*(h-65)/4;
+  x.beginPath();x.moveTo(0,yy);x.lineTo(plotW,yy);x.stroke();
+  const priceAtLine=hi-(i*(h-65)/4)*rg/(h-65);
+  x.fillText(priceAtLine.toFixed(priceAtLine<1?4:2),plotW+6,yy+3);
 }
+
 candles.forEach((a,i)=>{
-let xx=i*step+step/2;
-let up=a.c>=a.o;
-x.strokeStyle=x.fillStyle=up?'#31d2a4':'#ff6b6b';
-x.beginPath();x.moveTo(xx,y(a.h));x.lineTo(xx,y(a.l));x.stroke();
-let top=Math.min(y(a.o),y(a.c));
-x.fillRect(xx-step*.3,top,Math.max(2,step*.6),Math.max(1,Math.abs(y(a.c)-y(a.o))));
+  let xx=i*step+step/2;
+  let up=a.c>=a.o;
+  x.strokeStyle=x.fillStyle=up?'#31d2a4':'#ff6b6b';
+  x.beginPath();x.moveTo(xx,y(a.h));x.lineTo(xx,y(a.l));x.stroke();
+  let top=Math.min(y(a.o),y(a.c));
+  x.fillRect(xx-step*.3,top,Math.max(2,step*.6),Math.max(1,Math.abs(y(a.c)-y(a.o))));
 });
+
+const last=candles[candles.length-1];
+if(last){
+  const yy=y(last.c);
+  const up=last.c>=last.o;
+  x.strokeStyle=up?'#31d2a4':'#ff6b6b';
+  x.setLineDash([4,3]);
+  x.beginPath();x.moveTo(0,yy);x.lineTo(w,yy);x.stroke();
+  x.setLineDash([]);
+  x.fillStyle=up?'#31d2a4':'#ff6b6b';
+  x.fillRect(plotW,yy-8,rightPad,16);
+  x.fillStyle='#06121f';
+  x.font='bold 10px monospace';
+  x.textAlign='left';
+  x.fillText(last.c.toFixed(last.c<1?4:2),plotW+4,yy+3);
+}
 }
 function exportData(){
 let a=document.createElement('a');
@@ -405,7 +498,9 @@ renderMarkets();
 dca();
 renderPortfolio();
 refresh();
+connectWs();
 setInterval(refresh,60000);
 </script>
 </body>
 </html>
+
