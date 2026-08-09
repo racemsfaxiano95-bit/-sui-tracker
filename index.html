@@ -1,54 +1,93 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#071522">
 <title>SUI Tracker</title>
+
 <style>
 :root{
- --bg:#071522;--card:#0d2133;--line:#1c3b52;--text:#edf7fa;
- --muted:#8da8b7;--blue:#4da2ff;--green:#31d2a4;--red:#ff6b6b;--gold:#e8c079
+--bg:#071522;--card:#0d2133;--line:#1c3b52;
+--text:#edf7fa;--muted:#8da8b7;--blue:#4da2ff;
+--green:#31d2a4;--red:#ff6b6b;--gold:#e8c079
 }
 *{box-sizing:border-box}
-body{margin:0;background:radial-gradient(circle at 20% 0,#123653,transparent 45%),var(--bg);
-color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;padding-bottom:90px}
+body{
+margin:0;background:radial-gradient(circle at 20% 0,#123653,transparent 45%),var(--bg);
+color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+padding-bottom:90px
+}
 .wrap{max-width:720px;margin:auto;padding:16px}
 header{display:flex;justify-content:space-between;align-items:center;margin:8px 0 18px}
 .brand{font-size:21px;font-weight:800}
-.price{background:#102e49;border:1px solid var(--line);padding:8px 12px;border-radius:20px;font-family:monospace}
-.dot{display:inline-block;width:7px;height:7px;background:var(--green);border-radius:50%;margin-left:5px}
-.card{background:linear-gradient(180deg,#0e2539,#0a1c2c);border:1px solid var(--line);
-border-radius:16px;padding:17px;margin-bottom:14px}
-h2{font-size:15px;margin:0 0 15px}
+.price{
+background:#102e49;border:1px solid var(--line);padding:8px 12px;
+border-radius:20px;font-family:monospace
+}
+.dot{
+display:inline-block;width:7px;height:7px;background:var(--green);
+border-radius:50%;margin-right:5px
+}
+.card{
+background:linear-gradient(180deg,#0e2539,#0a1c2c);
+border:1px solid var(--line);border-radius:16px;padding:17px;margin-bottom:14px
+}
+h2{font-size:16px;margin:0 0 15px}
 .hero{font-size:38px;font-weight:800;font-family:monospace}
 .label{color:var(--muted);font-size:12px;margin-top:5px}
-.pill{display:inline-block;padding:5px 10px;border-radius:20px;font-family:monospace;font-size:12px;margin-right:8px}
+.pill{
+display:inline-block;padding:5px 10px;border-radius:20px;
+font-family:monospace;font-size:12px;margin-right:8px
+}
 .green{color:var(--green)}.red{color:var(--red)}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:15px}
-.stat{background:#0a1a29;border:1px solid var(--line);border-radius:11px;padding:12px}
+.stat{
+background:#0a1a29;border:1px solid var(--line);
+border-radius:11px;padding:12px
+}
 .stat small{display:block;color:var(--muted);font-size:11px;margin-bottom:5px}
 .stat b{font-family:monospace;font-size:15px}
-input,select{width:100%;background:#102c43;color:white;border:1px solid var(--line);
-border-radius:10px;padding:11px;font-size:15px;outline:none}
+input,select{
+width:100%;background:#102c43;color:white;border:1px solid var(--line);
+border-radius:10px;padding:11px;font-size:15px;outline:none
+}
 label{display:block;color:var(--muted);font-size:11px;margin-bottom:5px}
-button{border:0;border-radius:10px;padding:11px 14px;font-weight:700;cursor:pointer}
+button{border:0;border-radius:10px;padding:11px 14px;font-weight:700}
 .primary{width:100%;background:var(--blue);color:#06111c}
-.secondary{background:#123452;color:var(--blue);border:1px solid var(--line)}
+.secondary{
+background:#123452;color:var(--blue);border:1px solid var(--line)
+}
 .danger{background:#301b22;color:var(--red)}
 .row{display:flex;gap:8px}.row>*{flex:1}
 .targets{display:flex;gap:9px;overflow-x:auto}
-.target{min-width:125px;background:#0a1a29;border:1px solid var(--line);border-radius:11px;padding:12px}
+.target{
+min-width:125px;background:#0a1a29;border:1px solid var(--line);
+border-radius:11px;padding:12px
+}
 .target strong{font-family:monospace;color:var(--blue)}
 .target b{display:block;font-family:monospace;margin-top:8px}
 .target span{font-family:monospace;font-size:11px}
-.purchase{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);padding:11px 0}
+.purchase{
+display:flex;justify-content:space-between;align-items:center;
+border-bottom:1px solid var(--line);padding:11px 0
+}
 .purchase:last-child{border:0}
 .mono{font-family:monospace}
 .range{width:100%;accent-color:var(--blue)}
-.sim{background:#102d45;border:1px dashed var(--blue);border-radius:11px;padding:13px;margin-top:12px;line-height:1.8}
-nav{position:fixed;bottom:0;left:0;right:0;background:rgba(7,21,34,.94);
-backdrop-filter:blur(15px);border-top:1px solid var(--line);padding:9px;display:flex;justify-content:space-around}
+.sim{
+background:#102d45;border:1px dashed var(--blue);
+border-radius:11px;padding:13px;margin-top:12px;line-height:1.8
+}
+.chart{
+width:100%;height:220px;background:#091a29;
+border:1px solid var(--line);border-radius:12px
+}
+nav{
+position:fixed;bottom:0;left:0;right:0;background:rgba(7,21,34,.94);
+backdrop-filter:blur(15px);border-top:1px solid var(--line);
+padding:9px;display:flex;justify-content:space-around;z-index:10
+}
 nav button{background:none;color:var(--muted);font-size:11px}
 nav button.active{color:var(--blue)}
 .page{display:none}.page.active{display:block}
@@ -58,101 +97,200 @@ nav button.active{color:var(--blue)}
 </head>
 
 <body>
+
 <div class="wrap">
 
 <header>
-  <div class="brand">💧 SUI Tracker</div>
-  <div class="price"><span class="dot"></span><span id="price">Loading...</span></div>
+<div class="brand">💧 SUI Tracker</div>
+<div class="price">
+<span class="dot"></span><span id="price">Loading...</span>
+</div>
 </header>
 
+<!-- HOME -->
 <div class="page active" id="home">
 
 <div class="card">
-  <div class="hero" id="value">$0</div>
-  <div class="label">قيمة محفظتك الحالية</div>
-  <div style="margin-top:10px">
-    <span class="pill" id="pnlPct">0%</span>
-    <span class="mono" id="pnl">$0</span>
-  </div>
+<div class="hero" id="value">$0</div>
+<div class="label">Current Portfolio Value</div>
 
-  <div class="grid">
-    <div class="stat"><small>إجمالي SUI</small><b id="qty">0</b></div>
-    <div class="stat"><small>متوسط الدخول</small><b id="avg">$0</b></div>
-    <div class="stat"><small>إجمالي الاستثمار</small><b id="cost">$0</b></div>
-    <div class="stat"><small>سعر التعادل</small><b id="break">$0</b></div>
-  </div>
-
-  <button class="secondary" style="width:100%;margin-top:12px" onclick="livePrice()">
-    ⚡ تحديث سعر SUI
-  </button>
+<div style="margin-top:10px">
+<span class="pill" id="pnlPct">0%</span>
+<span class="mono" id="pnl">$0</span>
 </div>
 
+<div class="grid">
+<div class="stat">
+<small>Total SUI</small>
+<b id="qty">0</b>
+</div>
+
+<div class="stat">
+<small>Average Entry</small>
+<b id="avg">$0</b>
+</div>
+
+<div class="stat">
+<small>Total Investment</small>
+<b id="cost">$0</b>
+</div>
+
+<div class="stat">
+<small>Break-even Price</small>
+<b id="break">$0</b>
+</div>
+</div>
+
+<button class="secondary" style="width:100%;margin-top:12px"
+onclick="livePrice()">
+⚡ Update SUI Price
+</button>
+</div>
+
+<!-- CHART -->
 <div class="card">
-<h2>🎯 أهداف السعر</h2>
+<h2>📈 Portfolio Chart</h2>
+<canvas id="chart" class="chart"></canvas>
+<div class="note" style="margin-top:8px">
+Live SUI price and portfolio value
+</div>
+</div>
+
+<!-- TARGETS -->
+<div class="card">
+<h2>🎯 Price Targets</h2>
 <div class="targets" id="targets"></div>
 </div>
 
+<!-- SIMULATOR -->
 <div class="card">
-<h2>🧮 محاكي السعر</h2>
-<input class="range" id="slider" type="range" min="0.1" max="100" step="0.1" value="5">
+<h2>🧮 Price Simulator</h2>
+
+<input class="range" id="slider"
+type="range" min="0.1" max="100" step="0.1" value="5">
+
 <div class="sim" id="simulation"></div>
 </div>
 
 </div>
 
+<!-- BUYS -->
 <div class="page" id="buys">
 
 <div class="card">
-<h2>➕ إضافة عملية شراء</h2>
+<h2>➕ Add Purchase</h2>
+
 <div class="row">
-<div><label>الكمية SUI</label><input id="newQty" type="number" step="any" placeholder="100"></div>
-<div><label>السعر $</label><input id="newPrice" type="number" step="any" placeholder="0.70"></div>
+<div>
+<label>SUI Quantity</label>
+<input id="newQty" type="number" step="any" placeholder="100">
 </div>
-<button class="primary" style="margin-top:10px" onclick="addBuy()">إضافة شراء</button>
+
+<div>
+<label>Price $</label>
+<input id="newPrice" type="number" step="any" placeholder="0.70">
+</div>
+</div>
+
+<button class="primary" style="margin-top:10px"
+onclick="addBuy()">
+Add Purchase
+</button>
 </div>
 
 <div class="card">
-<h2>📋 سجل المشتريات</h2>
+<h2>📋 Purchase History</h2>
+
 <div id="history"></div>
-<button class="danger" style="width:100%;margin-top:10px" onclick="clearAll()">مسح الكل</button>
+
+<button class="danger"
+style="width:100%;margin-top:10px"
+onclick="clearAll()">
+Clear All
+</button>
 </div>
 
 </div>
 
+<!-- DCA -->
 <div class="page" id="dca">
 
 <div class="card">
-<h2>💰 DCA شهري</h2>
+<h2>💰 Monthly DCA</h2>
+
 <div class="row">
-<div><label>المبلغ الشهري $</label><input id="monthly" type="number" value="100"></div>
-<div><label>عدد الأشهر</label><input id="months" type="number" value="12"></div>
+<div>
+<label>Monthly Amount $</label>
+<input id="monthly" type="number" value="100">
 </div>
+
+<div>
+<label>Months</label>
+<input id="months" type="number" value="12">
+</div>
+</div>
+
 <div class="grid">
-<div class="stat"><small>إجمالي الإضافات</small><b id="dcaMoney">$1200</b></div>
-<div class="stat"><small>SUI إضافية</small><b id="dcaCoins">0</b></div>
+<div class="stat">
+<small>Total Added</small>
+<b id="dcaMoney">$1200</b>
+</div>
+
+<div class="stat">
+<small>Extra SUI</small>
+<b id="dcaCoins">0</b>
+</div>
 </div>
 </div>
 
 <div class="card">
-<h2>🚀 سيناريوهات</h2>
+<h2>🚀 Scenarios</h2>
 <div id="scenarios"></div>
 </div>
 
 </div>
 
+<!-- SETTINGS -->
 <div class="page" id="settings">
 
 <div class="card">
-<h2>⚙️ إعدادات</h2>
-<button class="secondary" style="width:100%;margin-bottom:9px" onclick="exportData()">⬇️ تصدير نسخة احتياطية</button>
-<button class="secondary" style="width:100%" onclick="document.getElementById('file').click()">⬆️ استيراد نسخة</button>
-<input id="file" type="file" accept=".json" hidden onchange="importData(event)">
+<h2>⚙️ Settings</h2>
+
+<button class="secondary"
+style="width:100%;margin-bottom:9px"
+onclick="exportData()">
+⬇️ Export Backup
+</button>
+
+<button class="secondary"
+style="width:100%"
+onclick="document.getElementById('file').click()">
+⬆️ Import Backup
+</button>
+
+<input id="file" type="file"
+accept=".json"
+hidden
+onchange="importData(event)">
+</div>
+
+<div class="card">
+<h2>🔄 Automatic Updates</h2>
+
+<div class="stat">
+<small>Current SUI Price</small>
+<b id="settingsPrice">$0</b>
+</div>
+
+<p class="note" style="margin-top:12px">
+Price automatically refreshes every 60 seconds.
+</p>
 </div>
 
 <div class="card">
 <p class="note">
-بياناتك محفوظة محليًا على جهازك بواسطة LocalStorage.<br>
-لا تدخل seed phrase أو private key في هذا التطبيق.
+Your portfolio data is stored locally on your device.<br>
+Never enter a seed phrase or private key.
 </p>
 </div>
 
@@ -160,240 +298,521 @@ nav button.active{color:var(--blue)}
 
 </div>
 
+<!-- NAV -->
 <nav>
-<button class="active" onclick="page('home',this)">🏠<br>الرئيسية</button>
-<button onclick="page('buys',this)">➕<br>المشتريات</button>
-<button onclick="page('dca',this)">💰<br>DCA</button>
-<button onclick="page('settings',this)">⚙️<br>إعدادات</button>
+
+<button class="active"
+onclick="page('home',this)">
+🏠<br>Home
+</button>
+
+<button onclick="page('buys',this)">
+➕<br>Purchases
+</button>
+
+<button onclick="page('dca',this)">
+💰<br>DCA
+</button>
+
+<button onclick="page('settings',this)">
+⚙️<br>Settings
+</button>
+
 </nav>
 
 <script>
+
 let buys=[];
 let current=0.69;
+let priceHistory=[];
 
 try{
- const saved=JSON.parse(localStorage.getItem("suiTracker"));
- if(Array.isArray(saved)) buys=saved;
+const saved=JSON.parse(localStorage.getItem("suiTracker"));
+if(Array.isArray(saved)) buys=saved;
+
+const hist=JSON.parse(localStorage.getItem("suiPriceHistory"));
+if(Array.isArray(hist)) priceHistory=hist;
 }catch(e){}
 
 const $=id=>document.getElementById(id);
 
 function money(n){
- return (n<0?"-":"")+"$"+Math.abs(n).toLocaleString("en-US",{maximumFractionDigits:2});
+return (n<0?"-":"")+"$"+
+Math.abs(n).toLocaleString("en-US",{
+maximumFractionDigits:2
+});
 }
 
 function price(n){
- return "$"+Number(n).toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:4});
+return "$"+Number(n).toLocaleString("en-US",{
+minimumFractionDigits:2,
+maximumFractionDigits:4
+});
 }
 
 function totals(){
- let q=0,c=0;
- buys.forEach(x=>{
-   q+=Number(x.q);
-   c+=Number(x.q)*Number(x.p);
- });
- return {q,c,a:q?c/q:0};
+
+let q=0,c=0;
+
+buys.forEach(x=>{
+q+=Number(x.q);
+c+=Number(x.q)*Number(x.p);
+});
+
+return{
+q,
+c,
+a:q?c/q:0
+};
 }
 
 function save(){
- localStorage.setItem("suiTracker",JSON.stringify(buys));
+localStorage.setItem(
+"suiTracker",
+JSON.stringify(buys)
+);
+}
+
+function saveHistory(){
+localStorage.setItem(
+"suiPriceHistory",
+JSON.stringify(priceHistory)
+);
 }
 
 function render(){
- const t=totals();
- const val=t.q*current;
- const pnl=val-t.c;
- const pct=t.c?pnl/t.c*100:0;
 
- $("price").textContent=price(current);
- $("value").textContent=money(val);
- $("qty").textContent=t.q.toLocaleString("en-US",{maximumFractionDigits:4})+" SUI";
- $("avg").textContent=price(t.a);
- $("break").textContent=price(t.a);
- $("cost").textContent=money(t.c);
+const t=totals();
 
- $("pnl").textContent=(pnl>=0?"+":"")+money(pnl);
- $("pnl").className="mono "+(pnl>=0?"green":"red");
+const val=t.q*current;
+const pnl=val-t.c;
+const pct=t.c?pnl/t.c*100:0;
 
- $("pnlPct").textContent=(pnl>=0?"+":"")+pct.toFixed(1)+"%";
- $("pnlPct").className="pill "+(pnl>=0?"green":"red");
+$("price").textContent=price(current);
+$("settingsPrice").textContent=price(current);
 
- renderTargets(t);
- renderHistory();
- renderDCA(t);
- simulate();
+$("value").textContent=money(val);
+
+$("qty").textContent=
+t.q.toLocaleString("en-US",{
+maximumFractionDigits:4
+})+" SUI";
+
+$("avg").textContent=price(t.a);
+$("break").textContent=price(t.a);
+$("cost").textContent=money(t.c);
+
+$("pnl").textContent=
+(pnl>=0?"+":"")+money(pnl);
+
+$("pnl").className=
+"mono "+(pnl>=0?"green":"red");
+
+$("pnlPct").textContent=
+(pnl>=0?"+":"")+pct.toFixed(1)+"%";
+
+$("pnlPct").className=
+"pill "+(pnl>=0?"green":"red");
+
+renderTargets(t);
+renderHistory();
+renderDCA(t);
+simulate();
+drawChart();
+
 }
 
 function renderTargets(t){
- const levels=[1,2,3,5,10,20,50,100];
- $("targets").innerHTML=levels.map(x=>{
-   const v=t.q*x;
-   const p=v-t.c;
-   return `
-   <div class="target">
-     <strong>${price(x)}</strong>
-     <b>${money(v)}</b>
-     <span class="${p>=0?"green":"red"}">${p>=0?"+":""}${money(p)}</span>
-   </div>`;
- }).join("");
+
+const levels=[
+1,2,3,5,10,20,50,100
+];
+
+$("targets").innerHTML=
+levels.map(x=>{
+
+const v=t.q*x;
+const p=v-t.c;
+
+return `
+<div class="target">
+
+<strong>${price(x)}</strong>
+
+<b>${money(v)}</b>
+
+<span class="${p>=0?"green":"red"}">
+${p>=0?"+":""}${money(p)}
+</span>
+
+</div>
+`;
+
+}).join("");
+
 }
 
 function renderHistory(){
- if(!buys.length){
-   $("history").innerHTML='<div class="note">ما فماش مشتريات مسجلة</div>';
-   return;
- }
 
- $("history").innerHTML=buys.slice().reverse().map((x,i)=>{
-   const real=buys.length-1-i;
-   return `
-   <div class="purchase">
-    <div>
-     <b class="mono">${Number(x.q).toLocaleString()} SUI</b><br>
-     <small class="mono" style="color:var(--muted)">
-     @ ${price(x.p)} = ${money(x.q*x.p)}
-     </small>
-    </div>
-    <button class="danger" onclick="removeBuy(${real})">×</button>
-   </div>`;
- }).join("");
+if(!buys.length){
+
+$("history").innerHTML=
+'<div class="note">No purchases recorded</div>';
+
+return;
+}
+
+$("history").innerHTML=
+buys.slice().reverse().map((x,i)=>{
+
+const real=buys.length-1-i;
+
+return `
+<div class="purchase">
+
+<div>
+<b class="mono">
+${Number(x.q).toLocaleString()} SUI
+</b>
+
+<br>
+
+<small class="mono"
+style="color:var(--muted)">
+@ ${price(x.p)}
+= ${money(x.q*x.p)}
+</small>
+</div>
+
+<button class="danger"
+onclick="removeBuy(${real})">
+×
+</button>
+
+</div>
+`;
+
+}).join("");
+
 }
 
 function addBuy(){
- const q=Number($("newQty").value);
- const p=Number($("newPrice").value);
 
- if(q<=0||p<=0){
-   alert("دخل الكمية والسعر الصحيحين");
-   return;
- }
+const q=Number($("newQty").value);
+const p=Number($("newPrice").value);
 
- buys.push({q,p});
- save();
+if(q<=0||p<=0){
 
- $("newQty").value="";
- $("newPrice").value="";
- render();
+alert("Enter a valid quantity and price.");
+return;
+
+}
+
+buys.push({
+q:q,
+p:p
+});
+
+save();
+
+$("newQty").value="";
+$("newPrice").value="";
+
+render();
+
 }
 
 function removeBuy(i){
- buys.splice(i,1);
- save();
- render();
+
+buys.splice(i,1);
+
+save();
+
+render();
+
 }
 
 function clearAll(){
- if(confirm("متأكد تحب تمسح كل المشتريات؟")){
-   buys=[];
-   save();
-   render();
- }
+
+if(confirm(
+"Are you sure you want to delete all purchases?"
+)){
+
+buys=[];
+
+save();
+
+render();
+
+}
+
 }
 
 function simulate(){
- const t=totals();
- const s=Number($("slider").value);
- const v=t.q*s;
- const p=v-t.c;
- const pct=t.c?p/t.c*100:0;
 
- $("simulation").innerHTML=
- `إذا SUI توصل لـ <b>${price(s)}</b><br>
-  قيمة المحفظة: <b>${money(v)}</b><br>
-  الربح/الخسارة:
-  <b class="${p>=0?"green":"red"}">${p>=0?"+":""}${money(p)}</b>
-  (${pct.toFixed(1)}%)`;
+const t=totals();
+
+const s=Number($("slider").value);
+
+const v=t.q*s;
+
+const p=v-t.c;
+
+const pct=t.c?p/t.c*100:0;
+
+$("simulation").innerHTML=
+
+`If SUI reaches <b>${price(s)}</b><br>
+Portfolio Value:
+<b>${money(v)}</b><br>
+Profit/Loss:
+<b class="${p>=0?"green":"red"}">
+${p>=0?"+":""}${money(p)}
+</b>
+(${pct.toFixed(1)}%)`;
+
 }
 
 $("slider").oninput=simulate;
 
 function renderDCA(t){
- const m=Number($("monthly").value)||0;
- const mo=Number($("months").value)||0;
- const total=m*mo;
- const coins=current?total/current:0;
 
- $("dcaMoney").textContent=money(total);
- $("dcaCoins").textContent=coins.toLocaleString("en-US",{maximumFractionDigits:2});
+const m=Number($("monthly").value)||0;
 
- const levels=[1,2,5,10,20];
- $("scenarios").innerHTML=levels.map(x=>{
-   const extra=coins;
-   const finalQty=t.q+extra;
-   const finalValue=finalQty*x;
-   return `
-   <div class="stat" style="margin-bottom:8px">
-    <small>SUI عند ${price(x)}</small>
-    <b>${money(finalValue)}</b>
-   </div>`;
- }).join("");
+const mo=Number($("months").value)||0;
+
+const total=m*mo;
+
+const coins=current?
+total/current:0;
+
+$("dcaMoney").textContent=money(total);
+
+$("dcaCoins").textContent=
+coins.toLocaleString("en-US",{
+maximumFractionDigits:2
+});
+
+const levels=[
+1,2,5,10,20
+];
+
+$("scenarios").innerHTML=
+levels.map(x=>{
+
+const finalQty=t.q+coins;
+
+const finalValue=finalQty*x;
+
+return `
+<div class="stat"
+style="margin-bottom:8px">
+
+<small>
+SUI at ${price(x)}
+</small>
+
+<b>
+${money(finalValue)}
+</b>
+
+</div>
+`;
+
+}).join("");
+
 }
 
-$("monthly").oninput=()=>render();
-$("months").oninput=()=>render();
+$("monthly").oninput=render;
+$("months").oninput=render;
 
 async function livePrice(){
- $("price").textContent="Loading...";
- try{
-   const r=await fetch(
-    "https://api.coingecko.com/api/v3/simple/price?ids=sui&vs_currencies=usd",
-    {cache:"no-store"}
-   );
 
-   if(!r.ok)throw new Error();
+$("price").textContent="Loading...";
 
-   const d=await r.json();
-   current=Number(d.sui.usd);
-   render();
- }catch(e){
-   alert("تعذر جلب السعر المباشر. تأكد من الإنترنت.");
-   render();
- }
+try{
+
+const r=await fetch(
+"https://api.coingecko.com/api/v3/simple/price?ids=sui&vs_currencies=usd",
+{cache:"no-store"}
+);
+
+if(!r.ok)throw new Error();
+
+const d=await r.json();
+
+current=Number(d.sui.usd);
+
+priceHistory.push({
+time:Date.now(),
+price:current
+});
+
+if(priceHistory.length>30)
+priceHistory.shift();
+
+saveHistory();
+
+render();
+
+}catch(e){
+
+render();
+
+}
+
+}
+
+function drawChart(){
+
+const canvas=$("chart");
+
+if(!canvas)return;
+
+const ctx=canvas.getContext("2d");
+
+const w=canvas.clientWidth;
+const h=canvas.clientHeight;
+
+const dpr=window.devicePixelRatio||1;
+
+canvas.width=w*dpr;
+canvas.height=h*dpr;
+
+ctx.scale(dpr,dpr);
+
+ctx.clearRect(0,0,w,h);
+
+const data=priceHistory.length?
+priceHistory.map(x=>x.price):
+[current];
+
+const min=Math.min(...data);
+const max=Math.max(...data);
+
+const range=max-min||0.01;
+
+ctx.beginPath();
+
+data.forEach((v,i)=>{
+
+const x=data.length===1?
+w/2:
+(i/(data.length-1))*w;
+
+const y=
+h-20-
+((v-min)/range)*(h-40);
+
+if(i===0)
+ctx.moveTo(x,y);
+else
+ctx.lineTo(x,y);
+
+});
+
+ctx.strokeStyle="#4da2ff";
+ctx.lineWidth=3;
+ctx.stroke();
+
 }
 
 function page(name,btn){
- document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));
- $(""+name).classList.add("active");
- document.querySelectorAll("nav button").forEach(x=>x.classList.remove("active"));
- btn.classList.add("active");
- window.scrollTo(0,0);
+
+document.querySelectorAll(".page")
+.forEach(x=>x.classList.remove("active"));
+
+$(name).classList.add("active");
+
+document.querySelectorAll("nav button")
+.forEach(x=>x.classList.remove("active"));
+
+btn.classList.add("active");
+
+window.scrollTo(0,0);
+
 }
 
 function exportData(){
- const data=JSON.stringify(buys,null,2);
- const blob=new Blob([data],{type:"application/json"});
- const a=document.createElement("a");
- a.href=URL.createObjectURL(blob);
- a.download="sui-backup.json";
- a.click();
- URL.revokeObjectURL(a.href);
+
+const data=JSON.stringify(buys,null,2);
+
+const blob=new Blob(
+[data],
+{type:"application/json"}
+);
+
+const a=document.createElement("a");
+
+a.href=URL.createObjectURL(blob);
+
+a.download="sui-backup.json";
+
+a.click();
+
+setTimeout(()=>{
+URL.revokeObjectURL(a.href);
+},1000);
+
 }
 
 function importData(e){
- const file=e.target.files[0];
- if(!file)return;
 
- const reader=new FileReader();
+const file=e.target.files[0];
 
- reader.onload=function(){
-   try{
-     const data=JSON.parse(reader.result);
-     if(!Array.isArray(data))throw new Error();
+if(!file)return;
 
-     buys=data;
-     save();
-     render();
-     alert("تم استيراد البيانات بنجاح ✅");
-   }catch(err){
-     alert("الملف غير صالح");
-   }
- };
+const reader=new FileReader();
 
- reader.readAsText(file);
-}
+reader.onload=function(){
+
+try{
+
+const data=JSON.parse(
+reader.result
+);
+
+if(!Array.isArray(data))
+throw new Error();
+
+buys=data;
+
+save();
 
 render();
+
+alert(
+"Backup imported successfully ✅"
+);
+
+}catch(err){
+
+alert(
+"Invalid backup file."
+);
+
+}
+
+};
+
+reader.readAsText(file);
+
+}
+
+window.addEventListener(
+"resize",
+drawChart
+);
+
+render();
+
 livePrice();
+
+setInterval(
+livePrice,
+60000
+);
+
 </script>
 
 </body>
