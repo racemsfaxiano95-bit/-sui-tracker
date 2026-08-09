@@ -2081,6 +2081,579 @@ refreshAll,
 60000
 );
 
+<script>
+/* ================================
+   MARKET TRACKER — ALL IN ONE
+   Live prices + Candles + Daily P/L
+================================ */
+
+(function () {
+  const CONFIG = {
+    holdings: 3369,
+    investment: 3806.97,
+    avgEntry: 1.13,
+    defaultCoin: "SUIUSDT",
+    defaultInterval: "15m"
+  };
+
+  const oldInit = window.__marketTrackerAllInOne;
+  if (oldInit) return;
+  window.__marketTrackerAllInOne = true;
+
+  /* ---------- STYLE ---------- */
+
+  const style = document.createElement("style");
+  style.textContent = `
+    #mt-live-box {
+      margin: 18px 0;
+      padding: 18px;
+      border-radius: 20px;
+      background: rgba(10,28,45,.96);
+      border: 1px solid #21445e;
+      box-shadow: 0 10px 30px rgba(0,0,0,.18);
+    }
+
+    #mt-live-box h2 {
+      margin: 0 0 14px;
+      color: #eef7ff;
+      font-size: 23px;
+    }
+
+    #mt-controls {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+
+    #mt-controls select {
+      flex: 1;
+      min-width: 105px;
+      background: #102a40;
+      color: white;
+      border: 1px solid #28516d;
+      border-radius: 11px;
+      padding: 10px;
+      font-size: 14px;
+      outline: none;
+    }
+
+    #mt-chart {
+      width: 100%;
+      height: 410px;
+      border-radius: 15px;
+      overflow: hidden;
+      background: #081a2b;
+    }
+
+    #mt-stats {
+      display: grid;
+      grid-template-columns: repeat(2,1fr);
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .mt-stat {
+      padding: 13px;
+      border-radius: 13px;
+      background: rgba(8,26,43,.95);
+      border: 1px solid #1d4059;
+    }
+
+    .mt-label {
+      color: #8eaabd;
+      font-size: 13px;
+      margin-bottom: 5px;
+    }
+
+    .mt-value {
+      color: #eef7ff;
+      font-size: 20px;
+      font-weight: 800;
+    }
+
+    .mt-green { color:#31d2a4 !important; }
+    .mt-red { color:#ff6262 !important; }
+
+    #mt-markets {
+      display: grid;
+      grid-template-columns: repeat(2,1fr);
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .mt-market {
+      padding: 14px;
+      border-radius: 14px;
+      background: rgba(8,26,43,.95);
+      border: 1px solid #1d4059;
+    }
+
+    .mt-market-name {
+      color:#a9c0d0;
+      font-size:14px;
+      margin-bottom:5px;
+    }
+
+    .mt-market-price {
+      color:#f4f8fb;
+      font-size:19px;
+      font-weight:800;
+    }
+
+    .mt-market-change {
+      font-size:13px;
+      margin-top:4px;
+      font-weight:700;
+    }
+
+    @media(max-width:520px) {
+      #mt-chart { height: 360px; }
+      #mt-stats { grid-template-columns:1fr 1fr; }
+      #mt-markets { grid-template-columns:1fr 1fr; }
+    }
+  `;
+  document.head.appendChild(style);
+
+  /* ---------- LOAD LIGHTWEIGHT CHARTS ---------- */
+
+  function loadChartLibrary() {
+    return new Promise((resolve, reject) => {
+      if (window.LightweightCharts) {
+        resolve();
+        return;
+      }
+
+      const script = document.createElement("script");
+      script.src =
+        "https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js";
+
+      script.onload = resolve;
+      script.onerror = reject;
+
+      document.head.appendChild(script);
+    });
+  }
+
+  /* ---------- FIND MAIN CONTENT ---------- */
+
+  function findMain() {
+    return (
+      document.querySelector("main") ||
+      document.querySelector(".container") ||
+      document.querySelector("#app") ||
+      document.body
+    );
+  }
+
+  /* ---------- BUILD UI ---------- */
+
+  function buildUI() {
+    if (document.getElementById("mt-live-box")) return;
+
+    const box = document.createElement("section");
+    box.id = "mt-live-box";
+
+    box.innerHTML = `
+      <h2>📊 Live Market & Portfolio</h2>
+
+      <div id="mt-controls">
+        <select id="mt-coin">
+          <option value="SUIUSDT">💧 SUI / USDT</option>
+          <option value="BTCUSDT">₿ Bitcoin / USDT</option>
+          <option value="ETHUSDT">♦ Ethereum / USDT</option>
+          <option value="SOLUSDT">🟣 Solana / USDT</option>
+        </select>
+
+        <select id="mt-time">
+          <option value="1m">1 Minute</option>
+          <option value="5m">5 Minutes</option>
+          <option value="15m" selected>15 Minutes</option>
+          <option value="1h">1 Hour</option>
+          <option value="4h">4 Hours</option>
+          <option value="1d">1 Day</option>
+        </select>
+      </div>
+
+      <div id="mt-chart"></div>
+
+      <div id="mt-stats">
+
+        <div class="mt-stat">
+          <div class="mt-label">Current Price</div>
+          <div id="mt-current" class="mt-value">$0.00</div>
+        </div>
+
+        <div class="mt-stat">
+          <div class="mt-label">Today's P/L</div>
+          <div id="mt-daily" class="mt-value">$0.00</div>
+        </div>
+
+        <div class="mt-stat">
+          <div class="mt-label">Today's Change</div>
+          <div id="mt-daily-percent" class="mt-value">0.00%</div>
+        </div>
+
+        <div class="mt-stat">
+          <div class="mt-label">Total P/L</div>
+          <div id="mt-total" class="mt-value">$0.00</div>
+        </div>
+
+      </div>
+
+      <div id="mt-markets">
+
+        <div class="mt-market">
+          <div class="mt-market-name">💧 SUI</div>
+          <div id="mt-sui-price" class="mt-market-price">$0.00</div>
+          <div id="mt-sui-change" class="mt-market-change">0.00%</div>
+        </div>
+
+        <div class="mt-market">
+          <div class="mt-market-name">₿ Bitcoin</div>
+          <div id="mt-btc-price" class="mt-market-price">$0.00</div>
+          <div id="mt-btc-change" class="mt-market-change">0.00%</div>
+        </div>
+
+        <div class="mt-market">
+          <div class="mt-market-name">♦ Ethereum</div>
+          <div id="mt-eth-price" class="mt-market-price">$0.00</div>
+          <div id="mt-eth-change" class="mt-market-change">0.00%</div>
+        </div>
+
+        <div class="mt-market">
+          <div class="mt-market-name">🟣 Solana</div>
+          <div id="mt-sol-price" class="mt-market-price">$0.00</div>
+          <div id="mt-sol-change" class="mt-market-change">0.00%</div>
+        </div>
+
+      </div>
+    `;
+
+    const main = findMain();
+
+    if (main.firstElementChild) {
+      main.insertBefore(box, main.firstElementChild);
+    } else {
+      main.appendChild(box);
+    }
+  }
+
+  /* ---------- FORMAT ---------- */
+
+  function money(n) {
+    if (!Number.isFinite(n)) return "$0.00";
+
+    return "$" + n.toLocaleString("en-US", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    });
+  }
+
+  function price(n) {
+    if (!Number.isFinite(n)) return "$0.00";
+
+    if (n >= 1000) {
+      return "$" + n.toLocaleString("en-US", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
+    }
+
+    if (n >= 1) return "$" + n.toFixed(2);
+    return "$" + n.toFixed(4);
+  }
+
+  function colorize(el, value) {
+    if (!el) return;
+
+    el.classList.remove("mt-green", "mt-red");
+
+    if (value > 0) el.classList.add("mt-green");
+    if (value < 0) el.classList.add("mt-red");
+  }
+
+  /* ---------- DAILY P/L ---------- */
+
+  function updatePortfolio(priceNow, change24h) {
+    const dailyPL = CONFIG.holdings * change24h;
+
+    const totalPL =
+      CONFIG.holdings * priceNow -
+      CONFIG.investment;
+
+    const dailyPercent =
+      priceNow > 0
+        ? (change24h / (priceNow - change24h)) * 100
+        : 0;
+
+    const current = document.getElementById("mt-current");
+    const daily = document.getElementById("mt-daily");
+    const dailyPercentEl =
+      document.getElementById("mt-daily-percent");
+    const total = document.getElementById("mt-total");
+
+    if (current) current.textContent = price(priceNow);
+
+    if (daily) {
+      daily.textContent =
+        (dailyPL >= 0 ? "+" : "") +
+        money(dailyPL);
+
+      colorize(daily, dailyPL);
+    }
+
+    if (dailyPercentEl) {
+      dailyPercentEl.textContent =
+        (dailyPercent >= 0 ? "+" : "") +
+        dailyPercent.toFixed(2) +
+        "%";
+
+      colorize(dailyPercentEl, dailyPercent);
+    }
+
+    if (total) {
+      total.textContent =
+        (totalPL >= 0 ? "+" : "") +
+        money(totalPL);
+
+      colorize(total, totalPL);
+    }
+  }
+
+  /* ---------- MARKET CARDS ---------- */
+
+  async function updateMarkets() {
+    const symbols = [
+      ["SUIUSDT","mt-sui-price","mt-sui-change"],
+      ["BTCUSDT","mt-btc-price","mt-btc-change"],
+      ["ETHUSDT","mt-eth-price","mt-eth-change"],
+      ["SOLUSDT","mt-sol-price","mt-sol-change"]
+    ];
+
+    try {
+      const response = await fetch(
+        "https://api.binance.com/api/v3/ticker/24hr"
+      );
+
+      const data = await response.json();
+
+      symbols.forEach(([symbol,priceId,changeId]) => {
+        const item = data.find(x => x.symbol === symbol);
+        if (!item) return;
+
+        const p = Number(item.lastPrice);
+        const c = Number(item.priceChangePercent);
+
+        const priceEl = document.getElementById(priceId);
+        const changeEl = document.getElementById(changeId);
+
+        if (priceEl) priceEl.textContent = price(p);
+
+        if (changeEl) {
+          changeEl.textContent =
+            (c >= 0 ? "+" : "") +
+            c.toFixed(2) +
+            "%";
+
+          colorize(changeEl, c);
+        }
+
+        if (symbol === "SUIUSDT") {
+          const absoluteChange = Number(item.priceChange);
+          updatePortfolio(p, absoluteChange);
+        }
+      });
+
+    } catch (e) {
+      console.log("Market update error:", e);
+    }
+  }
+
+  /* ---------- CANDLESTICK CHART ---------- */
+
+  let chart = null;
+  let candles = null;
+  let socket = null;
+
+  async function loadCandles() {
+    const symbol =
+      document.getElementById("mt-coin").value;
+
+    const interval =
+      document.getElementById("mt-time").value;
+
+    if (socket) {
+      try { socket.close(); } catch(e) {}
+      socket = null;
+    }
+
+    const container =
+      document.getElementById("mt-chart");
+
+    if (!container || !window.LightweightCharts) return;
+
+    container.innerHTML = "";
+
+    chart = LightweightCharts.createChart(container, {
+      width: container.clientWidth,
+      height: container.clientHeight,
+
+      layout: {
+        background: { color: "#081a2b" },
+        textColor: "#9db3c5"
+      },
+
+      grid: {
+        vertLines: { color: "#102b41" },
+        horzLines: { color: "#102b41" }
+      },
+
+      crosshair: {
+        mode: 1
+      },
+
+      rightPriceScale: {
+        borderColor: "#23465e"
+      },
+
+      timeScale: {
+        borderColor: "#23465e",
+        timeVisible: true,
+        secondsVisible: false
+      }
+    });
+
+    candles = chart.addCandlestickSeries({
+      upColor: "#31d2a4",
+      downColor: "#ff6262",
+      borderUpColor: "#31d2a4",
+      borderDownColor: "#ff6262",
+      wickUpColor: "#31d2a4",
+      wickDownColor: "#ff6262"
+    });
+
+    try {
+      const url =
+        "https://api.binance.com/api/v3/klines" +
+        "?symbol=" + symbol +
+        "&interval=" + interval +
+        "&limit=250";
+
+      const response = await fetch(url);
+      const data = await response.json();
+
+      const formatted = data.map(k => ({
+        time: Math.floor(Number(k[0]) / 1000),
+        open: Number(k[1]),
+        high: Number(k[2]),
+        low: Number(k[3]),
+        close: Number(k[4])
+      }));
+
+      candles.setData(formatted);
+      chart.timeScale().fitContent();
+
+      /* LIVE WEBSOCKET */
+
+      const stream =
+        symbol.toLowerCase() +
+        "@kline_" +
+        interval;
+
+      socket = new WebSocket(
+        "wss://stream.binance.com:9443/ws/" +
+        stream
+      );
+
+      socket.onmessage = function(event) {
+        try {
+          const msg = JSON.parse(event.data);
+          const k = msg.k;
+
+          candles.update({
+            time: Math.floor(Number(k.t) / 1000),
+            open: Number(k.o),
+            high: Number(k.h),
+            low: Number(k.l),
+            close: Number(k.c)
+          });
+
+          if (symbol === "SUIUSDT") {
+            const p = Number(k.c);
+            const current =
+              document.getElementById("mt-current");
+
+            if (current) {
+              current.textContent = price(p);
+            }
+          }
+
+        } catch(e) {
+          console.log("Candle update error:", e);
+        }
+      };
+
+    } catch(e) {
+      container.innerHTML =
+        '<div style="padding:30px;color:#ff6262;text-align:center">' +
+        'Unable to load live chart right now.' +
+        '</div>';
+    }
+  }
+
+  /* ---------- RESIZE ---------- */
+
+  window.addEventListener("resize", function() {
+    const container =
+      document.getElementById("mt-chart");
+
+    if (chart && container) {
+      chart.applyOptions({
+        width: container.clientWidth,
+        height: container.clientHeight
+      });
+    }
+  });
+
+  /* ---------- START ---------- */
+
+  async function start() {
+    try {
+      await loadChartLibrary();
+
+      buildUI();
+
+      const coin =
+        document.getElementById("mt-coin");
+
+      const timeframe =
+        document.getElementById("mt-time");
+
+      if (coin) {
+        coin.value = CONFIG.defaultCoin;
+        coin.addEventListener("change", loadCandles);
+      }
+
+      if (timeframe) {
+        timeframe.value = CONFIG.defaultInterval;
+        timeframe.addEventListener("change", loadCandles);
+      }
+
+      await updateMarkets();
+      await loadCandles();
+
+      /* Update prices every 5 seconds */
+      setInterval(updateMarkets, 5000);
+
+    } catch(e) {
+      console.log("Market Tracker error:", e);
+    }
+  }
+
+  start();
+
+})();
 </script>
 
 </body>
