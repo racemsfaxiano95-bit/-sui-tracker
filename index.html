@@ -4,40 +4,1587 @@
 <meta name="theme-color" content="#06121f"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Market Tracker">
 <title>Market Tracker</title>
 <style>
-:root{--bg:#06121f;--card:#0c1f30ee;--line:#1b3d55;--text:#eef8fb;--muted:#8da8b7;--blue:#4da2ff;--green:#31d2a4;--red:#ff6b6b}*{box-sizing:border-box}body{margin:0;background:linear-gradient(#06121f,#081827,#06121f);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;padding-bottom:85px}.wrap{max-width:760px;margin:auto;padding:16px}header{display:flex;justify-content:space-between;align-items:center;margin:8px 0 18px}.brand{font-size:21px;font-weight:800}.live{background:#102c43;border:1px solid var(--line);border-radius:22px;padding:8px 12px;font:13px monospace}.dot{display:inline-block;width:7px;height:7px;background:var(--green);border-radius:50%;margin-right:5px}.card{background:var(--card);border:1px solid var(--line);border-radius:17px;padding:17px;margin-bottom:14px}h2{font-size:15px;margin:0 0 14px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.asset,.stat,.target,.market{background:#091b2b;border:1px solid var(--line);border-radius:12px;padding:12px}.asset.active{border-color:var(--blue)}.asset b{font-size:15px}.muted{color:var(--muted)}.mono{font-family:monospace}.hero{font:800 36px monospace}.pill{display:inline-block;margin-top:8px;padding:5px 10px;border-radius:20px;background:#102c43;font:12px monospace}.green{color:var(--green)}.red{color:var(--red)}.blue{color:var(--blue)}.tabs{display:flex;gap:7px;margin-bottom:12px}.tab{background:#0b2032;color:var(--muted);border:1px solid var(--line);border-radius:20px;padding:7px 12px}.tab.active{color:var(--blue);border-color:var(--blue)}.chart{height:330px;background:#071725;border:1px solid var(--line);border-radius:13px;overflow:hidden}.chart canvas{width:100%;height:100%}.targets{display:flex;gap:9px;overflow:auto}.target{min-width:125px}.target strong{color:var(--blue);font:13px monospace}.target b{display:block;margin-top:7px}.row{display:flex;gap:9px}.row>*{flex:1}label{display:block;color:var(--muted);font-size:11px;margin:0 0 5px}input,select{width:100%;background:#102c43;color:white;border:1px solid var(--line);border-radius:10px;padding:11px;font-size:14px}button{border:0;border-radius:10px;padding:11px 14px;font-weight:700}.primary{width:100%;background:var(--blue);color:#06111c}.danger{background:#321b22;color:var(--red)}.secondary{background:#123452;color:var(--blue);border:1px solid var(--line)}.purchase,.market{display:flex;justify-content:space-between;align-items:center;margin-bottom:7px}.page{display:none}.page.active{display:block}.note{text-align:center;color:var(--muted);font-size:11px;line-height:1.7}nav{position:fixed;z-index:5;left:0;right:0;bottom:0;display:flex;justify-content:space-around;background:#05111cf5;border-top:1px solid var(--line);padding:9px 5px calc(9px + env(safe-area-inset-bottom));backdrop-filter:blur(16px)}nav button{background:none;color:var(--muted);font-size:10px;padding:5px 10px}nav button.active{color:var(--blue)}
-</style></head><body><div class="wrap">
-<header><div class="brand">🌐 Market Tracker</div><div class="live"><span class="dot"></span><span id="status">Live</span></div></header>
+:root{--bg:#06121f;--card:#0c1f30ee;--line:#1b3d55;--text:#eef8fb;--muted:#8da8b7;--blue:#4da2ff;--green:#31d2a4;--red:#ff6b6b}
+*{box-sizing:border-box}
+body{margin:0;background:linear-gradient(#06121f,#081827,#06121f);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;padding-bottom:85px}
+.wrap{max-width:760px;margin:auto;padding:16px}
+header{display:flex;justify-content:space-between;align-items:center;margin:8px 0 18px}
+.brand{font-size:21px;font-weight:800}
+.live{background:#102c43;border:1px solid var(--line);border-radius:22px;padding:8px 12px;font:13px monospace}
+.dot{display:inline-block;width:7px;height:7px;background:var(--green);border-radius:50%;margin-right:5px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:17px;padding:17px;margin-bottom:14px}
+h2{font-size:15px;margin:0 0 14px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.asset,.stat,.target,.market{background:#091b2b;border:1px solid var(--line);border-radius:12px;padding:12px}
+.asset.active{border-color:var(--blue)}
+.asset b{font-size:15px}
+.muted{color:var(--muted)}
+.mono{font-family:monospace}
+.hero{font:800 36px monospace}
+.pill{display:inline-block;margin-top:8px;padding:5px 10px;border-radius:20px;background:#102c43;font:12px monospace}
+.green{color:var(--green)}
+.red{color:var(--red)}
+.blue{color:var(--blue)}
+.tabs{display:flex;gap:7px;margin-bottom:12px}
+.tab{background:#0b2032;color:var(--muted);border:1px solid var(--line);border-radius:20px;padding:7px 12px}
+.tab.active{color:var(--blue);border-color:var(--blue)}
+.chart{height:330px;background:#071725;border:1px solid var(--line);border-radius:13px;overflow:hidden}
+.chart canvas{width:100%;height:100%}
+.targets{display:flex;gap:9px;overflow:auto}
+.target{min-width:125px}
+.target strong{color:var(--blue);font:13px monospace}
+.target b{display:block;margin-top:7px}
+.row{display:flex;gap:9px}
+.row>*{flex:1}
+label{display:block;color:var(--muted);font-size:11px;margin:0 0 5px}
+input,select{width:100%;background:#102c43;color:white;border:1px solid var(--line);border-radius:10px;padding:11px;font-size:14px}
+button{border:0;border-radius:10px;padding:11px 14px;font-weight:700}
+.primary{width:100%;background:var(--blue);color:#06111c}
+.danger{background:#321b22;color:var(--red)}
+.secondary{background:#123452;color:var(--blue);border:1px solid var(--line)}
+.purchase,.market{display:flex;justify-content:space-between;align-items:center;margin-bottom:7px}
+.page{display:none}
+.page.active{display:block}
+.note{text-align:center;color:var(--muted);font-size:11px;line-height:1.7}
+nav{position:fixed;z-index:5;left:0;right:0;bottom:0;display:flex;justify-content:space-around;background:#05111cf5;border-top:1px solid var(--line);padding:9px 5px calc(9px + env(safe-area-inset-bottom));backdrop-filter:blur(16px)}
+nav button{background:none;color:var(--muted);font-size:10px;padding:5px 10px}
+nav button.active{color:var(--blue)}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+<header>
+<div class="brand">🌐 Market Tracker</div>
+<div class="live"><span class="dot"></span><span id="status">Live</span></div>
+</header>
+
 <section id="home" class="page active">
-<div class="card"><h2>📊 Markets</h2><div id="assets" class="grid"></div></div>
-<div class="card"><div id="value" class="hero">$0</div><div class="muted">Current Portfolio Value</div><div id="pct" class="pill">0%</div><div class="grid" style="margin-top:15px"><div class="stat"><small class="muted">Asset</small><b id="sel">SUI</b></div><div class="stat"><small class="muted">Holdings</small><b id="qty">3,369 SUI</b></div><div class="stat"><small class="muted">Average Entry</small><b id="avg">$1.13</b></div><div class="stat"><small class="muted">Investment</small><b id="inv">$3,806.97</b></div><div class="stat"><small class="muted">Current Price</small><b id="cur">$0</b></div><div class="stat"><small class="muted">Total P/L</small><b id="pl">$0</b></div><div class="stat"><small class="muted">24h Change</small><b id="chg">0%</b></div><div class="stat"><small class="muted">Position Value</small><b id="pos">$0</b></div></div></div>
-<div class="card"><h2>🕯️ Market Chart</h2><div class="tabs"><button class="tab active" onclick="tf('15m',this)">15m</button><button class="tab" onclick="tf('1h',this)">1H</button><button class="tab" onclick="tf('4h',this)">4H</button><button class="tab" onclick="tf('1d',this)">1D</button></div><div class="chart"><canvas id="chart"></canvas></div></div>
-<div class="card"><h2>🎯 Price Targets</h2><div id="targets" class="targets"></div></div>
-<div class="card"><h2>🧮 Price Simulator</h2><input id="slider" type="range" min="0.1" max="100" step="0.1" value="5"><div id="sim" class="stat" style="margin-top:10px"></div></div>
+
+<div class="card">
+<h2>📊 Markets</h2>
+<div id="assets" class="grid"></div>
+</div>
+
+<div class="card">
+
+<div id="value" class="hero">$0</div>
+<div class="muted">Current Portfolio Value</div>
+
+<div id="pct" class="pill">0%</div>
+
+<div class="grid" style="margin-top:15px">
+
+<div class="stat">
+<small class="muted">Asset</small>
+<b id="sel">SUI</b>
+</div>
+
+<div class="stat">
+<small class="muted">Holdings</small>
+<b id="qty">3,369 SUI</b>
+</div>
+
+<div class="stat">
+<small class="muted">Average Entry</small>
+<b id="avg">$1.13</b>
+</div>
+
+<div class="stat">
+<small class="muted">Investment</small>
+<b id="inv">$3,806.97</b>
+</div>
+
+<div class="stat">
+<small class="muted">Current Price</small>
+<b id="cur">$0</b>
+</div>
+
+<div class="stat">
+<small class="muted">Total P/L</small>
+<b id="pl">$0</b>
+</div>
+
+<div class="stat">
+<small class="muted">Daily P/L (24h)</small>
+<b id="dailyPnl">—</b>
+</div>
+
+<div class="stat">
+<small class="muted">24h Change</small>
+<b id="chg">0%</b>
+</div>
+
+<div class="stat">
+<small class="muted">Position Value</small>
+<b id="pos">$0</b>
+</div>
+
+</div>
+</div>
+
+<div class="card">
+
+<h2>🕯️ Market Chart</h2>
+
+<div class="tabs">
+<button class="tab active" onclick="tf('15m',this)">15m</button>
+<button class="tab" onclick="tf('1h',this)">1H</button>
+<button class="tab" onclick="tf('4h',this)">4H</button>
+<button class="tab" onclick="tf('1d',this)">1D</button>
+</div>
+
+<div class="chart">
+<canvas id="chart"></canvas>
+</div>
+
+</div>
+
+<div class="card">
+<h2>🎯 Price Targets</h2>
+<div id="targets" class="targets"></div>
+</div>
+
+<div class="card">
+<h2>🧮 Price Simulator</h2>
+<input id="slider" type="range" min="0.1" max="100" step="0.1" value="5">
+<div id="sim" class="stat" style="margin-top:10px"></div>
+</div>
+
 </section>
-<section id="portfolio" class="page"><div class="card"><h2>➕ Add Purchase</h2><div class="row"><div><label>Asset</label><select id="ba"><option>SUI</option><option>BTC</option><option>ETH</option><option>SOL</option></select></div><div><label>Quantity</label><input id="bq" type="number" step="any"></div></div><label style="margin-top:9px">Purchase Price ($)</label><input id="bp" type="number" step="any"><button class="primary" style="margin-top:10px" onclick="add()">Add Purchase</button></div><div class="card"><h2>📋 Purchase History</h2><div id="history"></div><button class="danger" style="width:100%;margin-top:10px" onclick="clearAll()">Clear All Purchases</button></div></section>
-<section id="markets" class="page"><div class="card"><h2>🌍 Global Markets</h2><div id="marketList"></div></div></section>
-<section id="dca" class="page"><div class="card"><h2>💰 DCA Calculator</h2><div class="row"><div><label>Asset</label><select id="da"><option>SUI</option><option>BTC</option><option>ETH</option><option>SOL</option></select></div><div><label>Monthly Amount</label><input id="dm" type="number" value="100"></div></div><label style="margin-top:9px">Months</label><input id="dmo" type="number" value="12"><div class="grid" style="margin-top:12px"><div class="stat"><small class="muted">Total Added</small><b id="dt">$1,200</b></div><div class="stat"><small class="muted">Estimated Coins</small><b id="dc">0</b></div></div></div><div class="card"><h2>🚀 Scenarios</h2><div id="scenarios"></div></div></section>
-<section id="settings" class="page"><div class="card"><h2>⚙️ Settings</h2><button class="secondary" style="width:100%;margin-bottom:9px" onclick="exportData()">⬇️ Export Backup</button><button class="secondary" style="width:100%" onclick="file.click()">⬆️ Import Backup</button><input id="file" type="file" accept=".json" hidden onchange="importData(event)"></div><div class="card"><h2>🔄 Price Updates</h2><button class="secondary" style="width:100%" onclick="refresh()">↻ Refresh Markets Now</button></div><div class="card"><p class="note">Portfolio data is stored locally on this device.<br><br>Never enter a seed phrase or private key.</p></div></section>
-</div><nav><button class="active" onclick="page('home',this)">🏠<br>Home</button><button onclick="page('portfolio',this)">💼<br>Portfolio</button><button onclick="page('markets',this)">🌍<br>Markets</button><button onclick="page('dca',this)">💰<br>DCA</button><button onclick="page('settings',this)">⚙️<br>Settings</button></nav>
+
+<section id="portfolio" class="page">
+
+<div class="card">
+
+<h2>➕ Add Purchase</h2>
+
+<div class="row">
+
+<div>
+<label>Asset</label>
+<select id="ba">
+<option>SUI</option>
+<option>BTC</option>
+<option>ETH</option>
+<option>SOL</option>
+</select>
+</div>
+
+<div>
+<label>Quantity</label>
+<input id="bq" type="number" step="any">
+</div>
+
+</div>
+
+<label style="margin-top:9px">Purchase Price ($)</label>
+<input id="bp" type="number" step="any">
+
+<button class="primary" style="margin-top:10px" onclick="add()">
+Add Purchase
+</button>
+
+</div>
+
+<div class="card">
+
+<h2>📋 Purchase History</h2>
+
+<div id="history"></div>
+
+<button class="danger" style="width:100%;margin-top:10px" onclick="clearAll()">
+Clear All Purchases
+</button>
+
+</div>
+
+</section>
+
+<section id="markets" class="page">
+
+<div class="card">
+
+<h2>🌍 Global Markets</h2>
+
+<div id="marketList"></div>
+
+</div>
+
+</section>
+
+<section id="dca" class="page">
+
+<div class="card">
+
+<h2>💰 DCA Calculator</h2>
+
+<div class="row">
+
+<div>
+<label>Asset</label>
+<select id="da">
+<option>SUI</option>
+<option>BTC</option>
+<option>ETH</option>
+<option>SOL</option>
+</select>
+</div>
+
+<div>
+<label>Monthly Amount</label>
+<input id="dm" type="number" value="100">
+</div>
+
+</div>
+
+<label style="margin-top:9px">Months</label>
+<input id="dmo" type="number" value="12">
+
+<div class="grid" style="margin-top:12px">
+
+<div class="stat">
+<small class="muted">Total Added</small>
+<b id="dt">$1,200</b>
+</div>
+
+<div class="stat">
+<small class="muted">Estimated Coins</small>
+<b id="dc">0</b>
+</div>
+
+</div>
+
+</div>
+
+<div class="card">
+<h2>🚀 Scenarios</h2>
+<div id="scenarios"></div>
+</div>
+
+</section>
+
+<section id="settings" class="page">
+
+<div class="card">
+
+<h2>⚙️ Settings</h2>
+
+<button class="secondary" style="width:100%;margin-bottom:9px" onclick="exportData()">
+⬇️ Export Backup
+</button>
+
+<button class="secondary" style="width:100%" onclick="file.click()">
+⬆️ Import Backup
+</button>
+
+<input id="file" type="file" accept=".json" hidden onchange="importData(event)">
+
+</div>
+
+<div class="card">
+
+<h2>🔄 Price Updates</h2>
+
+<button class="secondary" style="width:100%" onclick="refresh()">
+↻ Refresh Markets Now
+</button>
+
+</div>
+
+<div class="card">
+
+<p class="note">
+Portfolio data is stored locally on this device.
+<br><br>
+Never enter a seed phrase or private key.
+</p>
+
+</div>
+
+</section>
+
+</div>
+
+<nav>
+
+<button class="active" onclick="page('home',this)">
+🏠<br>Home
+</button>
+
+<button onclick="page('portfolio',this)">
+💼<br>Portfolio
+</button>
+
+<button onclick="page('markets',this)">
+🌍<br>Markets
+</button>
+
+<button onclick="page('dca',this)">
+💰<br>DCA
+</button>
+
+<button onclick="page('settings',this)">
+⚙️<br>Settings
+</button>
+
+</nav>
+
 <script>
-const A={SUI:['Sui','💧','SUIUSDT'],BTC:['Bitcoin','₿','BTCUSDT'],ETH:['Ethereum','♦️','ETHUSDT'],SOL:['Solana','🟣','SOLUSDT']};const C={GOLD:['Gold','🟡','GC=F'],SILVER:['Silver','⚪','SI=F'],OIL:['Crude Oil','🛢️','CL=F']};let selected='SUI',interval='15m',prices={SUI:.69,BTC:0,ETH:0,SOL:0,GOLD:0,SILVER:0,OIL:0},changes={SUI:0,BTC:0,ETH:0,SOL:0,GOLD:0,SILVER:0,OIL:0},candles=[];
-const DEFAULT=[{asset:'SUI',q:3369,p:1.13}];let purchases;try{let s=JSON.parse(localStorage.getItem('marketTrackerPurchases'));purchases=Array.isArray(s)&&s.some(x=>x.asset==='SUI'&&Number(x.q)>0)?s:DEFAULT.slice()}catch(e){purchases=DEFAULT.slice()}localStorage.setItem('marketTrackerPurchases',JSON.stringify(purchases));
-const $=x=>document.getElementById(x),money=n=>(n<0?'-':'')+'$'+Math.abs(n||0).toLocaleString('en-US',{maximumFractionDigits:2}),fmt=n=>n?'$'+Number(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:n<1?6:2}):'$0';function save(){localStorage.setItem('marketTrackerPurchases',JSON.stringify(purchases))}function total(a){let q=0,c=0;purchases.forEach(x=>{if(x.asset===a){q+=+x.q;c+=x.q*x.p}});return{q,c,avg:q?c/q:0}}
-function renderAssets(){$('assets').innerHTML=Object.keys(A).map(k=>`<div class="asset ${k===selected?'active':''}" onclick="select('${k}')"><b>${A[k][1]} ${A[k][0]}</b><div class="mono" style="margin-top:8px">${fmt(prices[k])}</div><small class="${changes[k]>=0?'green':'red'}">${changes[k]>=0?'+':''}${(changes[k]||0).toFixed(2)}%</small></div>`).join('')}
-function select(k){selected=k;renderAssets();renderPortfolio();loadChart()}
-function renderPortfolio(){let t=total(selected),p=prices[selected]||0,v=t.q*p,pl=v-t.c,pc=t.c?pl/t.c*100:0;$('value').textContent=money(v);$('sel').textContent=selected;$('qty').textContent=t.q.toLocaleString()+' '+selected;$('avg').textContent=fmt(t.avg);$('inv').textContent=money(t.c);$('cur').textContent=fmt(p);$('pl').textContent=(pl>=0?'+':'')+money(pl);$('pl').className=pl>=0?'green':'red';$('pct').textContent=(pc>=0?'+':'')+pc.toFixed(2)+'%';$('chg').textContent=(changes[selected]>=0?'+':'')+(changes[selected]||0).toFixed(2)+'%';$('chg').className=changes[selected]>=0?'green':'red';$('pos').textContent=money(v);targets(t);simulate()}
-function targets(t){let ls=selected==='BTC'?[50000,75000,100000,150000,200000]:selected==='ETH'?[2000,3000,5000,7500,10000]:selected==='SOL'?[100,150,250,500,1000]:[1,1.5,2,3,5,10,20,50,100];$('targets').innerHTML=ls.map(x=>{let v=t.q*x,p=v-t.c;return`<div class="target"><strong>${fmt(x)}</strong><b>${money(v)}</b><span class="${p>=0?'green':'red'}">${p>=0?'+':''}${money(p)}</span></div>`}).join('')}
-function simulate(){let t=total(selected),s=+$('slider').value,v=t.q*s,p=v-t.c,pc=t.c?p/t.c*100:0;$('sim').innerHTML=`If ${selected} reaches <b>${fmt(s)}</b><br>Portfolio Value: <b>${money(v)}</b><br>P/L: <b class="${p>=0?'green':'red'}">${p>=0?'+':''}${money(p)}</b> (${pc.toFixed(1)}%)`}$('slider').oninput=simulate;
-function history(){$('history').innerHTML=purchases.length?purchases.slice().reverse().map((x,i)=>{let n=purchases.length-1-i;return`<div class="purchase"><div><b class="mono">${x.asset} · ${(+x.q).toLocaleString()}</b><br><small class="muted mono">@ ${fmt(+x.p)} = ${money(x.q*x.p)}</small></div><button class="danger" onclick="removeP(${n})">×</button></div>`}).join(''):'<p class="note">No purchases.</p>'}function add(){let a=$('ba').value,q=+$('bq').value,p=+$('bp').value;if(q<=0||p<=0)return alert('Enter a valid quantity and price.');purchases.push({asset:a,q,p});save();history();renderPortfolio();$('bq').value='';$('bp').value=''}function removeP(i){purchases.splice(i,1);save();history();renderPortfolio()}function clearAll(){if(confirm('Delete all purchases?')){purchases=[];save();history();renderPortfolio()}}
-function dca(){let a=$('da').value,m=+$('dm').value||0,mo=+$('dmo').value||0,t=m*mo,p=prices[a]||0,c=p?t/p:0;$('dt').textContent=money(t);$('dc').textContent=c.toLocaleString('en-US',{maximumFractionDigits:8});let ls=a==='BTC'?[75000,100000,150000,200000]:a==='ETH'?[3000,5000,7500,10000]:a==='SOL'?[150,250,500,1000]:[1,2,3,5,10,20];$('scenarios').innerHTML=ls.map(x=>`<div class="stat" style="margin-bottom:8px"><small class="muted">${a} at ${fmt(x)}</small><b>${money(c*x)}</b></div>`).join('')}
-$('dm').oninput=$('dmo').oninput=$('da').onchange=dca;
-async function crypto(k){try{let r=await fetch('https://api.binance.com/api/v3/ticker/24hr?symbol='+A[k][2],{cache:'no-store'});let d=await r.json();prices[k]=+d.lastPrice;changes[k]=+d.priceChangePercent}catch(e){}}async function yahoo(k){try{let r=await fetch('https://query1.finance.yahoo.com/v8/finance/chart/'+encodeURIComponent(C[k][2])+'?range=1d&interval=5m',{cache:'no-store'});let d=await r.json(),m=d.chart.result[0].meta;prices[k]=+(m.regularMarketPrice||m.previousClose||0);changes[k]=m.previousClose?(prices[k]-m.previousClose)/m.previousClose*100:0}catch(e){}}
-async function refresh(){$('status').textContent='Updating...';await Promise.all(Object.keys(A).map(crypto));await Promise.all(Object.keys(C).map(yahoo));renderAssets();renderPortfolio();renderMarkets();dca();if($('home').classList.contains('active'))loadChart();$('status').textContent='Live'}
-function renderMarkets(){$('marketList').innerHTML=Object.keys(C).map(k=>`<div class="market"><div>${C[k][1]} <b>${C[k][0]}</b><br><small class="muted">${C[k][2]}</small></div><div class="mono">${fmt(prices[k])}<br><span class="${changes[k]>=0?'green':'red'}">${changes[k]>=0?'+':''}${(changes[k]||0).toFixed(2)}%</span></div></div>`).join('')}
-function tf(x,b){interval=x;document.querySelectorAll('.tab').forEach(q=>q.classList.remove('active'));b.classList.add('active');loadChart()}
-async function loadChart(){try{let r=await fetch('https://api.binance.com/api/v3/klines?symbol='+A[selected][2]+'&interval='+interval+'&limit=100',{cache:'no-store'});let d=await r.json();candles=d.map(x=>({t:+x[0],o:+x[1],h:+x[2],l:+x[3],c:+x[4],v:+x[5]}));draw()}catch(e){candles=[];draw()}}
-function draw(){let c=$('chart'),x=c.getContext('2d'),w=c.clientWidth,h=c.clientHeight,d=devicePixelRatio||1;c.width=w*d;c.height=h*d;x.setTransform(d,0,0,d,0,0);x.clearRect(0,0,w,h);if(!candles.length){x.fillStyle='#8da8b7';x.textAlign='center';x.fillText('Chart data unavailable',w/2,h/2);return}let hi=Math.max(...candles.map(a=>a.h)),lo=Math.min(...candles.map(a=>a.l)),rg=hi-lo||1,step=w/candles.length,y=v=>8+(hi-v)/rg*(h-65);x.strokeStyle='rgba(141,168,183,.12)';for(let i=0;i<5;i++){let yy=8+i*(h-65)/4;x.beginPath();x.moveTo(0,yy);x.lineTo(w,yy);x.stroke()}candles.forEach((a,i)=>{let xx=i*step+step/2,up=a.c>=a.o;x.strokeStyle=x.fillStyle=up?'#31d2a4':'#ff6b6b';x.beginPath();x.moveTo(xx,y(a.h));x.lineTo(xx,y(a.l));x.stroke();let top=Math.min(y(a.o),y(a.c));x.fillRect(xx-step*.3,top,Math.max(2,step*.6),Math.max(1,Math.abs(y(a.c)-y(a.o))))})}
-function exportData(){let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(purchases,null,2)],{type:'application/json'}));a.download='market-tracker-backup.json';a.click()}function importData(e){let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{try{let d=JSON.parse(r.result);if(!Array.isArray(d))throw 0;purchases=d;save();history();renderPortfolio();alert('Backup imported successfully.')}catch(x){alert('Invalid backup file.')}};r.readAsText(f)}
-function page(n,b){document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));$(n).classList.add('active');document.querySelectorAll('nav button').forEach(x=>x.classList.remove('active'));b.classList.add('active');scrollTo(0,0);if(n==='home'){renderAssets();renderPortfolio();loadChart()}if(n==='portfolio')history();if(n==='markets')renderMarkets();if(n==='dca')dca()}
-addEventListener('resize',draw);renderAssets();history();renderMarkets();dca();renderPortfolio();refresh();setInterval(refresh,60000);
-</script></body></html>
+
+const A={
+SUI:['Sui','💧','SUIUSDT'],
+BTC:['Bitcoin','₿','BTCUSDT'],
+ETH:['Ethereum','♦️','ETHUSDT'],
+SOL:['Solana','🟣','SOLUSDT']
+};
+
+const C={
+GOLD:['Gold','🟡','GC=F'],
+SILVER:['Silver','⚪','SI=F'],
+OIL:['Crude Oil','🛢️','CL=F']
+};
+
+let selected='SUI';
+let interval='15m';
+
+let prices={
+SUI:.69,
+BTC:0,
+ETH:0,
+SOL:0,
+GOLD:0,
+SILVER:0,
+OIL:0
+};
+
+let changes={
+SUI:0,
+BTC:0,
+ETH:0,
+SOL:0,
+GOLD:0,
+SILVER:0,
+OIL:0
+};
+
+let candles=[];
+
+const DEFAULT=[
+{
+asset:'SUI',
+q:3369,
+p:1.13
+}
+];
+
+let purchases=[];
+
+try{
+
+let s=
+JSON.parse(
+localStorage.getItem('marketTrackerPurchases')
+);
+
+purchases=
+Array.isArray(s)&&
+s.some(x=>x.asset==='SUI'&&Number(x.q)>0)
+?s
+:DEFAULT.slice();
+
+}catch(e){
+
+purchases=
+DEFAULT.slice();
+
+}
+
+localStorage.setItem(
+'marketTrackerPurchases',
+JSON.stringify(purchases)
+);
+
+
+/* DAILY P/L SNAPSHOTS */
+
+let portfolioSnapshots=[];
+
+try{
+
+const saved=
+JSON.parse(
+localStorage.getItem(
+'marketTrackerSnapshots'
+)
+);
+
+if(Array.isArray(saved)){
+
+portfolioSnapshots=
+saved.filter(
+x=>
+Number.isFinite(Number(x.t))&&
+Number.isFinite(Number(x.v))
+);
+
+}
+
+}catch(e){}
+
+
+function $(x){
+return document.getElementById(x);
+}
+
+
+function money(n){
+
+return(
+n<0?'-':''
+)+
+'$'+
+Math.abs(n||0).toLocaleString(
+'en-US',
+{
+maximumFractionDigits:2
+}
+);
+
+}
+
+
+function fmt(n){
+
+return n
+?'$'+
+Number(n).toLocaleString(
+'en-US',
+{
+minimumFractionDigits:2,
+maximumFractionDigits:n<1?6:2
+}
+)
+:'$0';
+
+}
+
+
+function save(){
+
+localStorage.setItem(
+'marketTrackerPurchases',
+JSON.stringify(purchases)
+);
+
+}
+
+
+function total(a){
+
+let q=0;
+let c=0;
+
+purchases.forEach(x=>{
+
+if(x.asset===a){
+
+q+=Number(x.q);
+c+=Number(x.q)*Number(x.p);
+
+}
+
+});
+
+return{
+q,
+c,
+avg:q?c/q:0
+};
+
+}
+
+
+function getPortfolioValue(){
+
+let totalValue=0;
+
+Object.keys(A).forEach(asset=>{
+
+const t=total(asset);
+
+totalValue+=
+t.q*
+(prices[asset]||0);
+
+});
+
+return totalValue;
+
+}
+
+
+function saveSnapshots(){
+
+localStorage.setItem(
+'marketTrackerSnapshots',
+JSON.stringify(
+portfolioSnapshots
+)
+);
+
+}
+
+
+function updateDailyPnl(){
+
+const now=Date.now();
+
+const currentValue=
+getPortfolioValue();
+
+if(!currentValue){
+
+$('dailyPnl').textContent='—';
+
+return;
+
+}
+
+
+/* save current snapshot */
+
+portfolioSnapshots.push({
+t:now,
+v:currentValue
+});
+
+
+/* keep last 48 hours */
+
+const cutoff=
+now-
+48*60*60*1000;
+
+portfolioSnapshots=
+portfolioSnapshots.filter(
+x=>Number(x.t)>=cutoff
+);
+
+saveSnapshots();
+
+
+/* target = 24 hours ago */
+
+const target=
+now-
+24*60*60*1000;
+
+let old=null;
+
+for(const s of portfolioSnapshots){
+
+if(Number(s.t)<=target){
+
+if(
+!old||
+Number(s.t)>Number(old.t)
+){
+
+old=s;
+
+}
+
+}
+
+}
+
+
+/*
+If we don't yet have
+24 hours of history,
+use market 24h change
+as temporary estimate.
+*/
+
+if(!old){
+
+const change=
+Number(changes[selected]||0);
+
+if(change!==0){
+
+const estimatedOld=
+currentValue/
+(1+change/100);
+
+const pnl=
+currentValue-estimatedOld;
+
+$('dailyPnl').textContent=
+(pnl>=0?'+':'')+
+money(pnl)+
+' (est.)';
+
+$('dailyPnl').className=
+pnl>=0?'green':'red';
+
+return;
+
+}
+
+$('dailyPnl').textContent='—';
+$('dailyPnl').className='';
+
+return;
+
+}
+
+
+const pnl=
+currentValue-
+Number(old.v);
+
+const pct=
+Number(old.v)
+?pnl/Number(old.v)*100
+:0;
+
+$('dailyPnl').textContent=
+(pnl>=0?'+':'')+
+money(pnl)+
+' ('+
+(pct>=0?'+':'')+
+pct.toFixed(2)+
+'%)';
+
+$('dailyPnl').className=
+pnl>=0?'green':'red';
+
+}
+
+
+function renderAssets(){
+
+$('assets').innerHTML=
+Object.keys(A).map(k=>{
+
+return`
+
+<div
+class="asset ${k===selected?'active':''}"
+onclick="select('${k}')">
+
+<b>
+${A[k][1]} ${A[k][0]}
+</b>
+
+<div
+class="mono"
+style="margin-top:8px">
+
+${fmt(prices[k])}
+
+</div>
+
+<small
+class="${changes[k]>=0?'green':'red'}">
+
+${changes[k]>=0?'+':''}
+${(changes[k]||0).toFixed(2)}%
+
+</small>
+
+</div>
+
+`;
+
+}).join('');
+
+}
+
+
+function select(k){
+
+selected=k;
+
+renderAssets();
+
+renderPortfolio();
+
+loadChart();
+
+}
+
+
+function renderPortfolio(){
+
+let t=
+total(selected);
+
+let p=
+prices[selected]||0;
+
+let v=
+t.q*p;
+
+let pl=
+v-t.c;
+
+let pc=
+t.c?
+pl/t.c*100
+:0;
+
+$('value').textContent=
+money(v);
+
+$('sel').textContent=
+selected;
+
+$('qty').textContent=
+t.q.toLocaleString()+
+' '+
+selected;
+
+$('avg').textContent=
+fmt(t.avg);
+
+$('inv').textContent=
+money(t.c);
+
+$('cur').textContent=
+fmt(p);
+
+$('pl').textContent=
+(pl>=0?'+':'')+
+money(pl);
+
+$('pl').className=
+pl>=0?'green':'red';
+
+$('pct').textContent=
+(pc>=0?'+':'')+
+pc.toFixed(2)+
+'%';
+
+$('chg').textContent=
+(changes[selected]>=0?'+':'')+
+(changes[selected]||0).toFixed(2)+
+'%';
+
+$('chg').className=
+changes[selected]>=0
+?'green'
+:'red';
+
+$('pos').textContent=
+money(v);
+
+targets(t);
+
+simulate();
+
+updateDailyPnl();
+
+}
+
+
+function targets(t){
+
+let ls=
+selected==='BTC'
+?[50000,75000,100000,150000,200000]
+:
+selected==='ETH'
+?[2000,3000,5000,7500,10000]
+:
+selected==='SOL'
+?[100,150,250,500,1000]
+:
+[1,1.5,2,3,5,10,20,50,100];
+
+$('targets').innerHTML=
+ls.map(x=>{
+
+let v=
+t.q*x;
+
+let p=
+v-t.c;
+
+return`
+
+<div class="target">
+
+<strong>
+${fmt(x)}
+</strong>
+
+<b>
+${money(v)}
+</b>
+
+<span
+class="${p>=0?'green':'red'}">
+
+${p>=0?'+':''}
+${money(p)}
+
+</span>
+
+</div>
+
+`;
+
+}).join('');
+
+}
+
+
+function simulate(){
+
+let t=
+total(selected);
+
+let s=
++$('slider').value;
+
+let v=
+t.q*s;
+
+let p=
+v-t.c;
+
+let pc=
+t.c?
+p/t.c*100
+:0;
+
+$('sim').innerHTML=
+`
+If ${selected} reaches
+<b>${fmt(s)}</b>
+<br>
+Portfolio Value:
+<b>${money(v)}</b>
+<br>
+P/L:
+<b class="${p>=0?'green':'red'}">
+${p>=0?'+':''}${money(p)}
+</b>
+(${pc.toFixed(1)}%)
+`;
+
+}
+
+
+$('slider').oninput=
+simulate;
+
+
+function history(){
+
+$('history').innerHTML=
+purchases.length
+
+?
+
+purchases
+.slice()
+.reverse()
+.map((x,i)=>{
+
+let n=
+purchases.length-1-i;
+
+return`
+
+<div class="purchase">
+
+<div>
+
+<b class="mono">
+${x.asset} ·
+${(+x.q).toLocaleString()}
+</b>
+
+<br>
+
+<small class="muted mono">
+@ ${fmt(+x.p)}
+=
+${money(x.q*x.p)}
+</small>
+
+</div>
+
+<button
+class="danger"
+onclick="removeP(${n})">
+
+×
+
+</button>
+
+</div>
+
+`;
+
+}).join('')
+
+:
+
+'<p class="note">No purchases.</p>';
+
+}
+
+
+function add(){
+
+let a=$('ba').value;
+let q=+$('bq').value;
+let p=+$('bp').value;
+
+if(q<=0||p<=0){
+
+return alert(
+'Enter a valid quantity and price.'
+);
+
+}
+
+purchases.push({
+asset:a,
+q,
+p
+});
+
+save();
+
+history();
+
+renderPortfolio();
+
+$('bq').value='';
+$('bp').value='';
+
+}
+
+
+function removeP(i){
+
+purchases.splice(i,1);
+
+save();
+
+history();
+
+renderPortfolio();
+
+}
+
+
+function clearAll(){
+
+if(
+confirm(
+'Delete all purchases?'
+)
+){
+
+purchases=[];
+
+save();
+
+history();
+
+renderPortfolio();
+
+}
+
+}
+
+
+function dca(){
+
+let a=
+$('da').value;
+
+let m=
++$('dm').value||0;
+
+let mo=
++$('dmo').value||0;
+
+let t=
+m*mo;
+
+let p=
+prices[a]||0;
+
+let c=
+p?t/p:0;
+
+$('dt').textContent=
+money(t);
+
+$('dc').textContent=
+c.toLocaleString(
+'en-US',
+{
+maximumFractionDigits:8
+}
+);
+
+let ls=
+a==='BTC'
+?[75000,100000,150000,200000]
+:
+a==='ETH'
+?[3000,5000,7500,10000]
+:
+a==='SOL'
+?[150,250,500,1000]
+:
+[1,2,3,5,10,20];
+
+$('scenarios').innerHTML=
+ls.map(x=>`
+
+<div
+class="stat"
+style="margin-bottom:8px">
+
+<small class="muted">
+${a} at ${fmt(x)}
+</small>
+
+<b>
+${money(c*x)}
+</b>
+
+</div>
+
+`).join('');
+
+}
+
+
+$('dm').oninput=dca;
+$('dmo').oninput=dca;
+$('da').onchange=dca;
+
+
+async function crypto(k){
+
+try{
+
+let r=
+await fetch(
+'https://api.binance.com/api/v3/ticker/24hr?symbol='+
+A[k][2],
+{
+cache:'no-store'
+}
+);
+
+let d=
+await r.json();
+
+prices[k]=
++d.lastPrice;
+
+changes[k]=
++d.priceChangePercent;
+
+}catch(e){}
+
+}
+
+
+async function yahoo(k){
+
+try{
+
+let r=
+await fetch(
+'https://query1.finance.yahoo.com/v8/finance/chart/'+
+encodeURIComponent(C[k][2])+
+'?range=1d&interval=5m',
+{
+cache:'no-store'
+}
+);
+
+let d=
+await r.json();
+
+let m=
+d.chart.result[0].meta;
+
+prices[k]=
++(m.regularMarketPrice||
+m.previousClose||
+0);
+
+changes[k]=
+m.previousClose
+?
+(prices[k]-m.previousClose)/
+m.previousClose*100
+:0;
+
+}catch(e){}
+
+}
+
+
+async function refresh(){
+
+$('status').textContent=
+'Updating...';
+
+await Promise.all(
+Object.keys(A).map(crypto)
+);
+
+await Promise.all(
+Object.keys(C).map(yahoo)
+);
+
+renderAssets();
+
+renderPortfolio();
+
+renderMarkets();
+
+dca();
+
+updateDailyPnl();
+
+if(
+$('home').classList.contains('active')
+){
+
+loadChart();
+
+}
+
+$('status').textContent=
+'Live';
+
+}
+
+
+function renderMarkets(){
+
+$('marketList').innerHTML=
+Object.keys(C).map(k=>`
+
+<div class="market">
+
+<div>
+
+${C[k][1]}
+<b>${C[k][0]}</b>
+
+<br>
+
+<small class="muted">
+${C[k][2]}
+</small>
+
+</div>
+
+<div class="mono">
+
+${fmt(prices[k])}
+
+<br>
+
+<span
+class="${changes[k]>=0?'green':'red'}">
+
+${changes[k]>=0?'+':''}
+${(changes[k]||0).toFixed(2)}%
+
+</span>
+
+</div>
+
+</div>
+
+`).join('');
+
+}
+
+
+function tf(x,b){
+
+interval=x;
+
+document
+.querySelectorAll('.tab')
+.forEach(q=>
+q.classList.remove('active')
+);
+
+b.classList.add('active');
+
+loadChart();
+
+}
+
+
+async function loadChart(){
+
+try{
+
+let r=
+await fetch(
+'https://api.binance.com/api/v3/klines?symbol='+
+A[selected][2]+
+'&interval='+
+interval+
+'&limit=100',
+{
+cache:'no-store'
+}
+);
+
+let d=
+await r.json();
+
+candles=
+d.map(x=>({
+
+t:+x[0],
+o:+x[1],
+h:+x[2],
+l:+x[3],
+c:+x[4],
+v:+x[5]
+
+}));
+
+draw();
+
+}catch(e){
+
+candles=[];
+
+draw();
+
+}
+
+}
+
+
+function draw(){
+
+let c=
+$('chart');
+
+let x=
+c.getContext('2d');
+
+let w=
+c.clientWidth;
+
+let h=
+c.clientHeight;
+
+let d=
+devicePixelRatio||1;
+
+c.width=
+w*d;
+
+c.height=
+h*d;
+
+x.setTransform(
+d,0,0,d,0,0
+);
+
+x.clearRect(
+0,0,w,h
+);
+
+if(!candles.length){
+
+x.fillStyle=
+'#8da8b7';
+
+x.textAlign=
+'center';
+
+x.fillText(
+'Chart data unavailable',
+w/2,
+h/2
+);
+
+return;
+
+}
+
+let hi=
+Math.max(
+...candles.map(a=>a.h)
+);
+
+let lo=
+Math.min(
+...candles.map(a=>a.l)
+);
+
+let rg=
+hi-lo||1;
+
+let step=
+w/candles.length;
+
+let y=
+v=>
+8+
+(hi-v)/
+rg*
+(h-65);
+
+x.strokeStyle=
+'rgba(141,168,183,.12)';
+
+for(
+let i=0;
+i<5;
+i++
+){
+
+let yy=
+8+
+i*(h-65)/4;
+
+x.beginPath();
+
+x.moveTo(
+0,
+yy
+);
+
+x.lineTo(
+w,
+yy
+);
+
+x.stroke();
+
+}
+
+candles.forEach(
+(a,i)=>{
+
+let xx=
+i*step+
+step/2;
+
+let up=
+a.c>=a.o;
+
+x.strokeStyle=
+x.fillStyle=
+up
+?'#31d2a4'
+:'#ff6b6b';
+
+x.beginPath();
+
+x.moveTo(
+xx,
+y(a.h)
+);
+
+x.lineTo(
+xx,
+y(a.l)
+);
+
+x.stroke();
+
+let top=
+Math.min(
+y(a.o),
+y(a.c)
+);
+
+x.fillRect(
+xx-step*.3,
+top,
+Math.max(
+2,
+step*.6
+),
+Math.max(
+1,
+Math.abs(
+y(a.c)-y(a.o)
+)
+)
+);
+
+});
+
+}
+
+
+function exportData(){
+
+let a=
+document.createElement('a');
+
+a.href=
+URL.createObjectURL(
+new Blob(
+[
+JSON.stringify(
+purchases,
+null,
+2
+)
+],
+{
+type:'application/json'
+}
+)
+);
+
+a.download=
+'market-tracker-backup.json';
+
+a.click();
+
+}
+
+
+function importData(e){
+
+let f=
+e.target.files[0];
+
+if(!f)return;
+
+let r=
+new FileReader();
+
+r.onload=()=>{
+
+try{
+
+let d=
+JSON.parse(
+r.result
+);
+
+if(!Array.isArray(d))
+throw 0;
+
+purchases=d;
+
+save();
+
+history();
+
+renderPortfolio();
+
+alert(
+'Backup imported successfully.'
+);
+
+}catch(x){
+
+alert(
+'Invalid backup file.'
+);
+
+}
+
+};
+
+r.readAsText(f);
+
+}
+
+
+function page(n,b){
+
+document
+.querySelectorAll('.page')
+.forEach(
+x=>x.classList.remove('active')
+);
+
+$(n).classList.add('active');
+
+document
+.querySelectorAll('nav button')
+.forEach(
+x=>x.classList.remove('active')
+);
+
+b.classList.add('active');
+
+scrollTo(0,0);
+
+if(n==='home'){
+
+renderAssets();
+
+renderPortfolio();
+
+loadChart();
+
+}
+
+if(n==='portfolio')
+history();
+
+if(n==='markets')
+renderMarkets();
+
+if(n==='dca')
+dca();
+
+}
+
+
+addEventListener(
+'resize',
+draw
+);
+
+
+/* INITIAL */
+
+renderAssets();
+
+history();
+
+renderMarkets();
+
+dca();
+
+renderPortfolio();
+
+refresh();
+
+setInterval(
+refresh,
+60000
+);
+
+</script>
+
+</body>
+</html>
