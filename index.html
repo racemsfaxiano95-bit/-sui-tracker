@@ -2,97 +2,435 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#071522">
-<title>SUI Tracker</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#06121f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Market Tracker">
+<title>Market Tracker</title>
 
 <style>
 :root{
---bg:#071522;--card:#0d2133;--line:#1c3b52;
---text:#edf7fa;--muted:#8da8b7;--blue:#4da2ff;
---green:#31d2a4;--red:#ff6b6b;--gold:#e8c079
+ --bg:#06121f;
+ --bg2:#091b2b;
+ --card:rgba(12,31,48,.88);
+ --line:#1b3d55;
+ --text:#eef8fb;
+ --muted:#8da8b7;
+ --blue:#4da2ff;
+ --green:#31d2a4;
+ --red:#ff6b6b;
+ --gold:#e8c079;
+ --purple:#9b7cff;
 }
+
 *{box-sizing:border-box}
+
+html,body{
+ margin:0;
+ min-height:100%;
+ background:var(--bg);
+ color:var(--text);
+ font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif
+}
+
 body{
-margin:0;background:radial-gradient(circle at 20% 0,#123653,transparent 45%),var(--bg);
-color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-padding-bottom:90px
+ overflow-x:hidden;
+ padding-bottom:92px;
+ background:
+ radial-gradient(700px 450px at 10% -5%,rgba(38,113,171,.35),transparent 65%),
+ radial-gradient(600px 400px at 100% 5%,rgba(72,45,150,.22),transparent 65%),
+ linear-gradient(180deg,#06121f,#081827 55%,#06121f)
 }
-.wrap{max-width:720px;margin:auto;padding:16px}
-header{display:flex;justify-content:space-between;align-items:center;margin:8px 0 18px}
-.brand{font-size:21px;font-weight:800}
-.price{
-background:#102e49;border:1px solid var(--line);padding:8px 12px;
-border-radius:20px;font-family:monospace
+
+body:before{
+ content:"";
+ position:fixed;
+ inset:0;
+ pointer-events:none;
+ opacity:.18;
+ background:
+ radial-gradient(circle at 20% 30%,#4da2ff 0 1px,transparent 2px),
+ radial-gradient(circle at 80% 65%,#4da2ff 0 1px,transparent 2px);
+ background-size:140px 140px,190px 190px;
+ animation:floatBg 25s linear infinite;
 }
-.dot{
-display:inline-block;width:7px;height:7px;background:var(--green);
-border-radius:50%;margin-right:5px
+
+@keyframes floatBg{
+ from{transform:translateY(0)}
+ to{transform:translateY(-140px)}
 }
+
+.wrap{
+ position:relative;
+ z-index:1;
+ max-width:760px;
+ margin:auto;
+ padding:16px
+}
+
+header{
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ margin:7px 0 18px
+}
+
+.brand{
+ font-size:21px;
+ font-weight:800;
+ letter-spacing:-.3px
+}
+
+.live{
+ background:#102c43;
+ border:1px solid var(--line);
+ border-radius:22px;
+ padding:8px 12px;
+ font:13px monospace
+}
+
+.liveDot{
+ display:inline-block;
+ width:7px;
+ height:7px;
+ border-radius:50%;
+ background:var(--green);
+ margin-right:5px;
+ box-shadow:0 0 8px var(--green)
+}
+
 .card{
-background:linear-gradient(180deg,#0e2539,#0a1c2c);
-border:1px solid var(--line);border-radius:16px;padding:17px;margin-bottom:14px
+ background:linear-gradient(180deg,rgba(15,38,58,.94),rgba(8,25,40,.94));
+ border:1px solid var(--line);
+ border-radius:17px;
+ padding:17px;
+ margin-bottom:14px;
+ box-shadow:0 10px 35px rgba(0,0,0,.12)
 }
-h2{font-size:16px;margin:0 0 15px}
-.hero{font-size:38px;font-weight:800;font-family:monospace}
-.label{color:var(--muted);font-size:12px;margin-top:5px}
+
+h2{
+ margin:0 0 15px;
+ font-size:15px
+}
+
+.assetGrid{
+ display:grid;
+ grid-template-columns:repeat(2,1fr);
+ gap:9px
+}
+
+.asset{
+ background:rgba(255,255,255,.025);
+ border:1px solid var(--line);
+ border-radius:13px;
+ padding:13px;
+ cursor:pointer
+}
+
+.asset.active{
+ border-color:var(--blue);
+ box-shadow:0 0 0 1px rgba(77,162,255,.2)
+}
+
+.assetTop{
+ display:flex;
+ justify-content:space-between;
+ align-items:center
+}
+
+.assetName{
+ font-weight:800
+}
+
+.assetSymbol{
+ color:var(--muted);
+ font:11px monospace
+}
+
+.assetPrice{
+ font:17px monospace;
+ margin-top:9px
+}
+
+.assetChange{
+ font:11px monospace;
+ margin-top:4px
+}
+
+.green{color:var(--green)}
+.red{color:var(--red)}
+.gold{color:var(--gold)}
+.blue{color:var(--blue)}
+
+.hero{
+ font:800 38px monospace
+}
+
+.label{
+ color:var(--muted);
+ font-size:12px;
+ margin-top:5px
+}
+
 .pill{
-display:inline-block;padding:5px 10px;border-radius:20px;
-font-family:monospace;font-size:12px;margin-right:8px
+ display:inline-block;
+ padding:5px 10px;
+ border-radius:20px;
+ background:#102c43;
+ font:12px monospace;
+ margin-top:10px
 }
-.green{color:var(--green)}.red{color:var(--red)}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:15px}
+
+.stats{
+ display:grid;
+ grid-template-columns:1fr 1fr;
+ gap:9px;
+ margin-top:15px
+}
+
 .stat{
-background:#0a1a29;border:1px solid var(--line);
-border-radius:11px;padding:12px
+ background:#091b2b;
+ border:1px solid var(--line);
+ border-radius:11px;
+ padding:12px
 }
-.stat small{display:block;color:var(--muted);font-size:11px;margin-bottom:5px}
-.stat b{font-family:monospace;font-size:15px}
+
+.stat small{
+ display:block;
+ color:var(--muted);
+ font-size:11px;
+ margin-bottom:5px
+}
+
+.stat b{
+ font:600 15px monospace
+}
+
+.row{
+ display:flex;
+ gap:9px
+}
+
+.row>*{flex:1}
+
+label{
+ display:block;
+ color:var(--muted);
+ font-size:11px;
+ margin-bottom:5px
+}
+
 input,select{
-width:100%;background:#102c43;color:white;border:1px solid var(--line);
-border-radius:10px;padding:11px;font-size:15px;outline:none
+ width:100%;
+ background:#102c43;
+ color:white;
+ border:1px solid var(--line);
+ border-radius:10px;
+ padding:11px;
+ font-size:14px;
+ outline:none
 }
-label{display:block;color:var(--muted);font-size:11px;margin-bottom:5px}
-button{border:0;border-radius:10px;padding:11px 14px;font-weight:700}
-.primary{width:100%;background:var(--blue);color:#06111c}
+
+button{
+ border:0;
+ border-radius:10px;
+ padding:11px 14px;
+ font-weight:700;
+ cursor:pointer
+}
+
+.primary{
+ width:100%;
+ background:var(--blue);
+ color:#06111c
+}
+
 .secondary{
-background:#123452;color:var(--blue);border:1px solid var(--line)
+ background:#123452;
+ color:var(--blue);
+ border:1px solid var(--line)
 }
-.danger{background:#301b22;color:var(--red)}
-.row{display:flex;gap:8px}.row>*{flex:1}
-.targets{display:flex;gap:9px;overflow-x:auto}
+
+.danger{
+ background:#321b22;
+ color:var(--red)
+}
+
+.tabs{
+ display:flex;
+ gap:7px;
+ overflow-x:auto;
+ margin-bottom:12px
+}
+
+.tab{
+ flex-shrink:0;
+ background:#0b2032;
+ border:1px solid var(--line);
+ color:var(--muted);
+ border-radius:20px;
+ padding:7px 12px;
+ font:11px monospace
+}
+
+.tab.active{
+ color:var(--blue);
+ border-color:var(--blue);
+ background:#102f4b
+}
+
+.chartWrap{
+ position:relative;
+ width:100%;
+ height:330px;
+ background:#071725;
+ border:1px solid var(--line);
+ border-radius:13px;
+ overflow:hidden
+}
+
+canvas{
+ width:100%;
+ height:100%;
+ display:block
+}
+
+.chartInfo{
+ display:flex;
+ justify-content:space-between;
+ margin-top:8px;
+ color:var(--muted);
+ font:10px monospace
+}
+
+.targets{
+ display:flex;
+ gap:9px;
+ overflow-x:auto
+}
+
 .target{
-min-width:125px;background:#0a1a29;border:1px solid var(--line);
-border-radius:11px;padding:12px
+ min-width:120px;
+ background:#091b2b;
+ border:1px solid var(--line);
+ border-radius:12px;
+ padding:12px
 }
-.target strong{font-family:monospace;color:var(--blue)}
-.target b{display:block;font-family:monospace;margin-top:8px}
-.target span{font-family:monospace;font-size:11px}
+
+.target strong{
+ color:var(--blue);
+ font:600 13px monospace
+}
+
+.target b{
+ display:block;
+ font:600 15px monospace;
+ margin-top:8px
+}
+
+.target span{
+ display:block;
+ font:11px monospace;
+ margin-top:4px
+}
+
 .purchase{
-display:flex;justify-content:space-between;align-items:center;
-border-bottom:1px solid var(--line);padding:11px 0
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ padding:11px 0;
+ border-bottom:1px solid var(--line)
 }
+
 .purchase:last-child{border:0}
+
 .mono{font-family:monospace}
-.range{width:100%;accent-color:var(--blue)}
+
+.range{
+ width:100%;
+ accent-color:var(--blue)
+}
+
 .sim{
-background:#102d45;border:1px dashed var(--blue);
-border-radius:11px;padding:13px;margin-top:12px;line-height:1.8
+ margin-top:12px;
+ background:#102d45;
+ border:1px dashed var(--blue);
+ border-radius:12px;
+ padding:13px;
+ line-height:1.8
 }
-.chart{
-width:100%;height:220px;background:#091a29;
-border:1px solid var(--line);border-radius:12px
+
+.marketRow{
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ padding:13px 0;
+ border-bottom:1px solid var(--line)
 }
+
+.marketRow:last-child{border:0}
+
+.marketLeft{
+ display:flex;
+ align-items:center;
+ gap:10px
+}
+
+.marketIcon{
+ width:34px;
+ height:34px;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ border-radius:10px;
+ background:#102c43;
+ font-size:18px
+}
+
+.marketPrice{
+ font:14px monospace;
+ text-align:right
+}
+
+.page{display:none}
+.page.active{display:block}
+
 nav{
-position:fixed;bottom:0;left:0;right:0;background:rgba(7,21,34,.94);
-backdrop-filter:blur(15px);border-top:1px solid var(--line);
-padding:9px;display:flex;justify-content:space-around;z-index:10
+ position:fixed;
+ z-index:20;
+ left:0;
+ right:0;
+ bottom:0;
+ display:flex;
+ justify-content:space-around;
+ padding:9px 7px calc(9px + env(safe-area-inset-bottom));
+ background:rgba(5,17,28,.94);
+ backdrop-filter:blur(18px);
+ border-top:1px solid var(--line)
 }
-nav button{background:none;color:var(--muted);font-size:11px}
-nav button.active{color:var(--blue)}
-.page{display:none}.page.active{display:block}
-.note{text-align:center;color:var(--muted);font-size:11px;line-height:1.6}
-@media(max-width:430px){.hero{font-size:32px}}
+
+nav button{
+ background:none;
+ color:var(--muted);
+ font-size:10px;
+ padding:5px 12px
+}
+
+nav button.active{
+ color:var(--blue)
+}
+
+.note{
+ color:var(--muted);
+ text-align:center;
+ font-size:11px;
+ line-height:1.7
+}
+
+@media(max-width:430px){
+ .hero{font-size:32px}
+ .assetGrid{grid-template-columns:1fr 1fr}
+}
 </style>
 </head>
 
@@ -101,213 +439,381 @@ nav button.active{color:var(--blue)}
 <div class="wrap">
 
 <header>
-<div class="brand">💧 SUI Tracker</div>
-<div class="price">
-<span class="dot"></span><span id="price">Loading...</span>
-</div>
+ <div class="brand">🌐 Market Tracker</div>
+ <div class="live">
+  <span class="liveDot"></span>
+  <span id="globalStatus">Live</span>
+ </div>
 </header>
+
 
 <!-- HOME -->
 <div class="page active" id="home">
 
 <div class="card">
-<div class="hero" id="value">$0</div>
-<div class="label">Current Portfolio Value</div>
 
-<div style="margin-top:10px">
-<span class="pill" id="pnlPct">0%</span>
-<span class="mono" id="pnl">$0</span>
+<h2>📊 Markets</h2>
+
+<div class="assetGrid" id="assetGrid"></div>
+
 </div>
 
-<div class="grid">
+
+<div class="card">
+
+<div class="hero" id="portfolioValue">$0</div>
+
+<div class="label">Current Portfolio Value</div>
+
+<div>
+<span class="pill" id="portfolioPnl">0%</span>
+</div>
+
+<div class="stats">
+
 <div class="stat">
-<small>Total SUI</small>
-<b id="qty">0</b>
+<small>Asset</small>
+<b id="selectedAsset">SUI</b>
+</div>
+
+<div class="stat">
+<small>Holdings</small>
+<b id="holding">0</b>
 </div>
 
 <div class="stat">
 <small>Average Entry</small>
-<b id="avg">$0</b>
+<b id="avgEntry">$0</b>
 </div>
 
 <div class="stat">
-<small>Total Investment</small>
-<b id="cost">$0</b>
+<small>Investment</small>
+<b id="investment">$0</b>
 </div>
 
 <div class="stat">
-<small>Break-even Price</small>
-<b id="break">$0</b>
-</div>
+<small>Current Price</small>
+<b id="currentPrice">$0</b>
 </div>
 
-<button class="secondary" style="width:100%;margin-top:12px"
-onclick="livePrice()">
-⚡ Update SUI Price
+<div class="stat">
+<small>Profit / Loss</small>
+<b id="profitLoss">$0</b>
+</div>
+
+</div>
+
+</div>
+
+
+<div class="card">
+
+<h2>🕯️ Market Chart</h2>
+
+<div class="tabs">
+
+<button class="tab active" onclick="setIntervalTF('15m',this)">
+15m
 </button>
+
+<button class="tab" onclick="setIntervalTF('1h',this)">
+1H
+</button>
+
+<button class="tab" onclick="setIntervalTF('4h',this)">
+4H
+</button>
+
+<button class="tab" onclick="setIntervalTF('1d',this)">
+1D
+</button>
+
 </div>
 
-<!-- CHART -->
-<div class="card">
-<h2>📈 Portfolio Chart</h2>
-<canvas id="chart" class="chart"></canvas>
-<div class="note" style="margin-top:8px">
-Live SUI price and portfolio value
-</div>
+<div class="chartWrap">
+<canvas id="chart"></canvas>
 </div>
 
-<!-- TARGETS -->
+<div class="chartInfo">
+<span id="chartLeft">—</span>
+<span>Price / Volume</span>
+<span id="chartRight">—</span>
+</div>
+
+</div>
+
+
 <div class="card">
+
 <h2>🎯 Price Targets</h2>
+
 <div class="targets" id="targets"></div>
+
 </div>
 
-<!-- SIMULATOR -->
+
 <div class="card">
+
 <h2>🧮 Price Simulator</h2>
 
-<input class="range" id="slider"
-type="range" min="0.1" max="100" step="0.1" value="5">
+<input
+class="range"
+id="slider"
+type="range"
+min="0.1"
+max="100"
+step="0.1"
+value="5">
 
 <div class="sim" id="simulation"></div>
-</div>
 
 </div>
 
-<!-- BUYS -->
-<div class="page" id="buys">
+</div>
+
+
+<!-- PORTFOLIO -->
+<div class="page" id="portfolio">
 
 <div class="card">
+
 <h2>➕ Add Purchase</h2>
 
 <div class="row">
+
 <div>
-<label>SUI Quantity</label>
-<input id="newQty" type="number" step="any" placeholder="100">
+<label>Asset</label>
+
+<select id="buyAsset">
+<option value="SUI">SUI</option>
+<option value="BTC">BTC</option>
+<option value="ETH">ETH</option>
+<option value="SOL">SOL</option>
+</select>
+
 </div>
 
 <div>
-<label>Price $</label>
-<input id="newPrice" type="number" step="any" placeholder="0.70">
-</div>
+<label>Quantity</label>
+<input id="buyQty" type="number" step="any" placeholder="100">
 </div>
 
-<button class="primary" style="margin-top:10px"
-onclick="addBuy()">
+</div>
+
+<div style="margin-top:9px">
+
+<label>Purchase Price ($)</label>
+
+<input id="buyPrice" type="number" step="any" placeholder="0.70">
+
+</div>
+
+<button
+class="primary"
+style="margin-top:10px"
+onclick="addPurchase()">
+
 Add Purchase
+
 </button>
+
 </div>
+
 
 <div class="card">
+
 <h2>📋 Purchase History</h2>
 
 <div id="history"></div>
 
-<button class="danger"
+<button
+class="danger"
 style="width:100%;margin-top:10px"
 onclick="clearAll()">
-Clear All
+
+Clear All Purchases
+
 </button>
+
 </div>
 
 </div>
+
+
+<!-- MARKETS -->
+<div class="page" id="markets">
+
+<div class="card">
+
+<h2>🌍 Global Markets</h2>
+
+<div id="marketsList"></div>
+
+</div>
+
+<div class="card">
+
+<p class="note">
+Crypto prices are provided by Binance where available.
+Gold, Silver and Oil prices use public market data.
+Prices may be delayed depending on the data source.
+</p>
+
+</div>
+
+</div>
+
 
 <!-- DCA -->
 <div class="page" id="dca">
 
 <div class="card">
-<h2>💰 Monthly DCA</h2>
+
+<h2>💰 DCA Calculator</h2>
 
 <div class="row">
+
 <div>
-<label>Monthly Amount $</label>
+<label>Asset</label>
+
+<select id="dcaAsset">
+<option value="SUI">SUI</option>
+<option value="BTC">BTC</option>
+<option value="ETH">ETH</option>
+<option value="SOL">SOL</option>
+</select>
+</div>
+
+<div>
+<label>Monthly Amount ($)</label>
 <input id="monthly" type="number" value="100">
 </div>
 
-<div>
-<label>Months</label>
-<input id="months" type="number" value="12">
-</div>
 </div>
 
-<div class="grid">
+<div style="margin-top:9px">
+
+<label>Number of Months</label>
+
+<input id="months" type="number" value="12">
+
+</div>
+
+<div class="stats">
+
 <div class="stat">
 <small>Total Added</small>
-<b id="dcaMoney">$1200</b>
+<b id="dcaMoney">$1,200</b>
 </div>
 
 <div class="stat">
-<small>Extra SUI</small>
+<small>Estimated Coins</small>
 <b id="dcaCoins">0</b>
 </div>
+
 </div>
+
 </div>
 
 <div class="card">
+
 <h2>🚀 Scenarios</h2>
+
 <div id="scenarios"></div>
+
 </div>
 
 </div>
+
 
 <!-- SETTINGS -->
 <div class="page" id="settings">
 
 <div class="card">
+
 <h2>⚙️ Settings</h2>
 
-<button class="secondary"
+<button
+class="secondary"
 style="width:100%;margin-bottom:9px"
 onclick="exportData()">
+
 ⬇️ Export Backup
+
 </button>
 
-<button class="secondary"
+<button
+class="secondary"
 style="width:100%"
 onclick="document.getElementById('file').click()">
+
 ⬆️ Import Backup
+
 </button>
 
-<input id="file" type="file"
+<input
+id="file"
+type="file"
 accept=".json"
 hidden
 onchange="importData(event)">
+
 </div>
 
 <div class="card">
-<h2>🔄 Automatic Updates</h2>
+
+<h2>🔄 Price Updates</h2>
 
 <div class="stat">
-<small>Current SUI Price</small>
-<b id="settingsPrice">$0</b>
+
+<small>Update Frequency</small>
+
+<b>60 seconds</b>
+
 </div>
 
-<p class="note" style="margin-top:12px">
-Price automatically refreshes every 60 seconds.
-</p>
+<button
+class="secondary"
+style="width:100%;margin-top:10px"
+onclick="refreshAll()">
+
+↻ Refresh Markets Now
+
+</button>
+
 </div>
 
 <div class="card">
+
 <p class="note">
-Your portfolio data is stored locally on your device.<br>
+
+Portfolio data is stored locally on this device.
+
+<br><br>
+
 Never enter a seed phrase or private key.
+
 </p>
-</div>
 
 </div>
 
 </div>
 
-<!-- NAV -->
+</div>
+
+
 <nav>
 
-<button class="active"
-onclick="page('home',this)">
+<button class="active" onclick="page('home',this)">
 🏠<br>Home
 </button>
 
-<button onclick="page('buys',this)">
-➕<br>Purchases
+<button onclick="page('portfolio',this)">
+💼<br>Portfolio
+</button>
+
+<button onclick="page('markets',this)">
+🌍<br>Markets
 </button>
 
 <button onclick="page('dca',this)">
@@ -320,217 +826,499 @@ onclick="page('home',this)">
 
 </nav>
 
+
 <script>
 
-let buys=[];
-let current=0.69;
-let priceHistory=[];
+const ASSETS={
+
+SUI:{
+ name:"Sui",
+ symbol:"SUI",
+ icon:"💧",
+ type:"crypto",
+ binance:"SUIUSDT"
+},
+
+BTC:{
+ name:"Bitcoin",
+ symbol:"BTC",
+ icon:"₿",
+ type:"crypto",
+ binance:"BTCUSDT"
+},
+
+ETH:{
+ name:"Ethereum",
+ symbol:"ETH",
+ icon:"♦️",
+ type:"crypto",
+ binance:"ETHUSDT"
+},
+
+SOL:{
+ name:"Solana",
+ symbol:"SOL",
+ icon:"🟣",
+ type:"crypto",
+ binance:"SOLUSDT"
+},
+
+GOLD:{
+ name:"Gold",
+ symbol:"XAU",
+ icon:"🟡",
+ type:"commodity",
+ yahoo:"GC=F"
+},
+
+SILVER:{
+ name:"Silver",
+ symbol:"XAG",
+ icon:"⚪",
+ type:"commodity",
+ yahoo:"SI=F"
+},
+
+OIL:{
+ name:"Crude Oil",
+ symbol:"WTI",
+ icon:"🛢️",
+ type:"commodity",
+ yahoo:"CL=F"
+}
+
+};
+
+let selected="SUI";
+let timeframe="15m";
+
+let prices={
+ SUI:0.69,
+ BTC:0,
+ ETH:0,
+ SOL:0,
+ GOLD:0,
+ SILVER:0,
+ OIL:0
+};
+
+let changes={
+ SUI:0,
+ BTC:0,
+ ETH:0,
+ SOL:0,
+ GOLD:0,
+ SILVER:0,
+ OIL:0
+};
+
+let candles=[];
+
+let purchases=[];
+
 
 try{
-const saved=JSON.parse(localStorage.getItem("suiTracker"));
-if(Array.isArray(saved)) buys=saved;
 
-const hist=JSON.parse(localStorage.getItem("suiPriceHistory"));
-if(Array.isArray(hist)) priceHistory=hist;
+const old=
+JSON.parse(localStorage.getItem("suiTracker"));
+
+if(Array.isArray(old)){
+
+purchases=old.map(x=>({
+
+asset:"SUI",
+q:Number(x.q),
+p:Number(x.p)
+
+}));
+
+}
+
+const saved=
+JSON.parse(localStorage.getItem("marketTrackerPurchases"));
+
+if(Array.isArray(saved)&&saved.length){
+purchases=saved;
+}
+
 }catch(e){}
 
-const $=id=>document.getElementById(id);
+
+function $(id){
+return document.getElementById(id);
+}
+
 
 function money(n){
-return (n<0?"-":"")+"$"+
+
+if(!Number.isFinite(n))n=0;
+
+return(n<0?"-":"")+"$"+
 Math.abs(n).toLocaleString("en-US",{
 maximumFractionDigits:2
 });
+
 }
+
 
 function price(n){
-return "$"+Number(n).toLocaleString("en-US",{
+
+if(!Number.isFinite(n))return"$0";
+
+return"$"+
+Number(n).toLocaleString("en-US",{
 minimumFractionDigits:2,
-maximumFractionDigits:4
+maximumFractionDigits:n<1?6:2
 });
+
 }
 
-function totals(){
 
-let q=0,c=0;
+function save(){
 
-buys.forEach(x=>{
+localStorage.setItem(
+"marketTrackerPurchases",
+JSON.stringify(purchases)
+);
+
+}
+
+
+function getTotal(asset){
+
+let q=0;
+let cost=0;
+
+purchases.forEach(x=>{
+
+if(x.asset===asset){
+
 q+=Number(x.q);
-c+=Number(x.q)*Number(x.p);
+cost+=Number(x.q)*Number(x.p);
+
+}
+
 });
 
 return{
 q,
-c,
-a:q?c/q:0
+cost,
+avg:q?cost/q:0
 };
+
 }
 
-function save(){
-localStorage.setItem(
-"suiTracker",
-JSON.stringify(buys)
-);
+
+function renderAssets(){
+
+const grid=$("assetGrid");
+
+const keys=[
+"SUI",
+"BTC",
+"ETH",
+"SOL"
+];
+
+grid.innerHTML=
+keys.map(key=>{
+
+const a=ASSETS[key];
+
+const p=prices[key]||0;
+
+const c=changes[key]||0;
+
+return`
+
+<div
+class="asset ${selected===key?"active":""}"
+onclick="selectAsset('${key}')">
+
+<div class="assetTop">
+
+<div class="assetName">
+${a.icon} ${a.name}
+</div>
+
+<div class="assetSymbol">
+${a.symbol}
+</div>
+
+</div>
+
+<div class="assetPrice">
+${price(p)}
+</div>
+
+<div class="assetChange ${c>=0?"green":"red"}">
+${c>=0?"+":""}${c.toFixed(2)}%
+</div>
+
+</div>
+
+`;
+
+}).join("");
+
 }
 
-function saveHistory(){
-localStorage.setItem(
-"suiPriceHistory",
-JSON.stringify(priceHistory)
-);
+
+function selectAsset(asset){
+
+selected=asset;
+
+renderAssets();
+
+renderPortfolio();
+
+loadCandles();
+
 }
 
-function render(){
 
-const t=totals();
+function renderPortfolio(){
 
-const val=t.q*current;
-const pnl=val-t.c;
-const pct=t.c?pnl/t.c*100:0;
+const t=getTotal(selected);
 
-$("price").textContent=price(current);
-$("settingsPrice").textContent=price(current);
+const current=prices[selected]||0;
 
-$("value").textContent=money(val);
+const value=t.q*current;
 
-$("qty").textContent=
+const pnl=value-t.cost;
+
+const pct=t.cost?pnl/t.cost*100:0;
+
+
+$("portfolioValue").textContent=money(value);
+
+$("selectedAsset").textContent=selected;
+
+$("holding").textContent=
 t.q.toLocaleString("en-US",{
-maximumFractionDigits:4
-})+" SUI";
+maximumFractionDigits:8
+})+" "+selected;
 
-$("avg").textContent=price(t.a);
-$("break").textContent=price(t.a);
-$("cost").textContent=money(t.c);
+$("avgEntry").textContent=price(t.avg);
 
-$("pnl").textContent=
+$("investment").textContent=money(t.cost);
+
+$("currentPrice").textContent=price(current);
+
+$("profitLoss").textContent=
 (pnl>=0?"+":"")+money(pnl);
 
-$("pnl").className=
-"mono "+(pnl>=0?"green":"red");
+$("profitLoss").className=
+pnl>=0?"green":"red";
 
-$("pnlPct").textContent=
-(pnl>=0?"+":"")+pct.toFixed(1)+"%";
+$("portfolioPnl").textContent=
+(pct>=0?"+":"")+pct.toFixed(2)+"%";
 
-$("pnlPct").className=
-"pill "+(pnl>=0?"green":"red");
+$("portfolioPnl").className=
+"pill "+(pct>=0?"green":"red");
 
 renderTargets(t);
-renderHistory();
-renderDCA(t);
+
 simulate();
-drawChart();
 
 }
+
 
 function renderTargets(t){
 
-const levels=[
-1,2,3,5,10,20,50,100
-];
+const levels=
+selected==="BTC"?
+[50000,75000,100000,150000,200000]:
+selected==="ETH"?
+[2000,3000,5000,7500,10000]:
+selected==="SOL"?
+[100,150,250,500,1000]:
+[1,2,3,5,10,20,50,100];
+
 
 $("targets").innerHTML=
 levels.map(x=>{
 
-const v=t.q*x;
-const p=v-t.c;
+const value=t.q*x;
 
-return `
+const pnl=value-t.cost;
+
+return`
+
 <div class="target">
 
 <strong>${price(x)}</strong>
 
-<b>${money(v)}</b>
+<b>${money(value)}</b>
 
-<span class="${p>=0?"green":"red"}">
-${p>=0?"+":""}${money(p)}
+<span class="${pnl>=0?"green":"red"}">
+
+${pnl>=0?"+":""}${money(pnl)}
+
 </span>
 
 </div>
+
 `;
 
 }).join("");
 
 }
 
-function renderHistory(){
 
-if(!buys.length){
+function simulate(){
 
-$("history").innerHTML=
-'<div class="note">No purchases recorded</div>';
+const t=getTotal(selected);
 
-return;
+const s=Number($("slider").value);
+
+const value=t.q*s;
+
+const pnl=value-t.cost;
+
+const pct=t.cost?pnl/t.cost*100:0;
+
+
+$("simulation").innerHTML=
+
+`
+
+If ${selected} reaches <b>${price(s)}</b>
+
+<br>
+
+Portfolio Value:
+<b>${money(value)}</b>
+
+<br>
+
+Profit/Loss:
+
+<b class="${pnl>=0?"green":"red"}">
+
+${pnl>=0?"+":""}${money(pnl)}
+
+</b>
+
+(${pct.toFixed(1)}%)
+
+`;
+
 }
 
+
+$("slider").oninput=simulate;
+
+
+function renderHistory(){
+
+if(!purchases.length){
+
 $("history").innerHTML=
-buys.slice().reverse().map((x,i)=>{
+'<div class="note">No purchases recorded yet.</div>';
 
-const real=buys.length-1-i;
+return;
 
-return `
+}
+
+
+$("history").innerHTML=
+purchases.slice().reverse().map((x,i)=>{
+
+const index=
+purchases.length-1-i;
+
+return`
+
 <div class="purchase">
 
 <div>
+
 <b class="mono">
-${Number(x.q).toLocaleString()} SUI
+${x.asset} · ${Number(x.q).toLocaleString()}
 </b>
 
 <br>
 
-<small class="mono"
-style="color:var(--muted)">
-@ ${price(x.p)}
-= ${money(x.q*x.p)}
+<small class="mono" style="color:var(--muted)">
+
+@ ${price(Number(x.p))}
+=
+${money(Number(x.q)*Number(x.p))}
+
 </small>
+
 </div>
 
-<button class="danger"
-onclick="removeBuy(${real})">
+<button
+class="danger"
+onclick="removePurchase(${index})">
+
 ×
+
 </button>
 
 </div>
+
 `;
 
 }).join("");
 
 }
 
-function addBuy(){
 
-const q=Number($("newQty").value);
-const p=Number($("newPrice").value);
+function addPurchase(){
+
+const asset=
+$("buyAsset").value;
+
+const q=
+Number($("buyQty").value);
+
+const p=
+Number($("buyPrice").value);
+
 
 if(q<=0||p<=0){
 
 alert("Enter a valid quantity and price.");
+
 return;
 
 }
 
-buys.push({
-q:q,
-p:p
+
+purchases.push({
+asset,
+q,
+p
 });
 
-save();
-
-$("newQty").value="";
-$("newPrice").value="";
-
-render();
-
-}
-
-function removeBuy(i){
-
-buys.splice(i,1);
 
 save();
 
-render();
+$("buyQty").value="";
+$("buyPrice").value="";
+
+renderHistory();
+
+renderPortfolio();
 
 }
+
+
+function removePurchase(i){
+
+purchases.splice(i,1);
+
+save();
+
+renderHistory();
+
+renderPortfolio();
+
+}
+
 
 function clearAll(){
 
@@ -538,215 +1326,639 @@ if(confirm(
 "Are you sure you want to delete all purchases?"
 )){
 
-buys=[];
+purchases=[];
 
 save();
 
-render();
+renderHistory();
+
+renderPortfolio();
 
 }
 
 }
 
-function simulate(){
 
-const t=totals();
+function renderDCA(){
 
-const s=Number($("slider").value);
+const asset=
+$("dcaAsset").value;
 
-const v=t.q*s;
+const monthly=
+Number($("monthly").value)||0;
 
-const p=v-t.c;
+const months=
+Number($("months").value)||0;
 
-const pct=t.c?p/t.c*100:0;
+const total=
+monthly*months;
 
-$("simulation").innerHTML=
+const current=
+prices[asset]||0;
 
-`If SUI reaches <b>${price(s)}</b><br>
-Portfolio Value:
-<b>${money(v)}</b><br>
-Profit/Loss:
-<b class="${p>=0?"green":"red"}">
-${p>=0?"+":""}${money(p)}
-</b>
-(${pct.toFixed(1)}%)`;
+const coins=
+current?total/current:0;
 
-}
 
-$("slider").oninput=simulate;
-
-function renderDCA(t){
-
-const m=Number($("monthly").value)||0;
-
-const mo=Number($("months").value)||0;
-
-const total=m*mo;
-
-const coins=current?
-total/current:0;
-
-$("dcaMoney").textContent=money(total);
+$("dcaMoney").textContent=
+money(total);
 
 $("dcaCoins").textContent=
 coins.toLocaleString("en-US",{
-maximumFractionDigits:2
+maximumFractionDigits:8
 });
 
-const levels=[
-1,2,5,10,20
-];
+
+const levels=
+asset==="BTC"?
+[75000,100000,150000,200000]:
+asset==="ETH"?
+[3000,5000,7500,10000]:
+asset==="SOL"?
+[150,250,500,1000]:
+[1,2,5,10,20];
+
 
 $("scenarios").innerHTML=
 levels.map(x=>{
 
-const finalQty=t.q+coins;
+const value=coins*x;
 
-const finalValue=finalQty*x;
+return`
 
-return `
-<div class="stat"
-style="margin-bottom:8px">
+<div class="stat" style="margin-bottom:8px">
 
 <small>
-SUI at ${price(x)}
+${asset} at ${price(x)}
 </small>
 
 <b>
-${money(finalValue)}
+${money(value)}
 </b>
 
 </div>
+
 `;
 
 }).join("");
 
 }
 
-$("monthly").oninput=render;
-$("months").oninput=render;
 
-async function livePrice(){
+$("monthly").oninput=renderDCA;
 
-$("price").textContent="Loading...";
+$("months").oninput=renderDCA;
+
+$("dcaAsset").onchange=renderDCA;
+
+
+async function cryptoPrice(asset){
 
 try{
 
-const r=await fetch(
-"https://api.coingecko.com/api/v3/simple/price?ids=sui&vs_currencies=usd",
-{cache:"no-store"}
-);
+const url=
+"https://api.binance.com/api/v3/ticker/24hr?symbol="+
+ASSETS[asset].binance;
+
+const r=
+await fetch(url,{cache:"no-store"});
 
 if(!r.ok)throw new Error();
 
 const d=await r.json();
 
-current=Number(d.sui.usd);
+prices[asset]=Number(d.lastPrice);
 
-priceHistory.push({
-time:Date.now(),
-price:current
-});
+changes[asset]=Number(d.priceChangePercent);
 
-if(priceHistory.length>30)
-priceHistory.shift();
+}catch(e){}
 
-saveHistory();
+}
 
-render();
+
+async function commodityPrice(asset){
+
+try{
+
+const symbol=
+encodeURIComponent(
+ASSETS[asset].yahoo
+);
+
+const url=
+"https://query1.finance.yahoo.com/v8/finance/chart/"+
+symbol+
+"?range=1d&interval=5m";
+
+const r=
+await fetch(url,{cache:"no-store"});
+
+if(!r.ok)throw new Error();
+
+const d=await r.json();
+
+const result=
+d.chart.result[0];
+
+const meta=
+result.meta;
+
+prices[asset]=
+Number(
+meta.regularMarketPrice||
+meta.previousClose||
+0
+);
+
+if(meta.previousClose){
+
+changes[asset]=
+((prices[asset]-meta.previousClose)/
+meta.previousClose)*100;
+
+}
+
+}catch(e){}
+
+}
+
+
+async function refreshAll(){
+
+$("globalStatus").textContent="Updating...";
+
+await Promise.all([
+
+cryptoPrice("SUI"),
+cryptoPrice("BTC"),
+cryptoPrice("ETH"),
+cryptoPrice("SOL"),
+
+commodityPrice("GOLD"),
+commodityPrice("SILVER"),
+commodityPrice("OIL")
+
+]);
+
+
+renderAssets();
+
+renderPortfolio();
+
+renderMarkets();
+
+renderDCA();
+
+$("globalStatus").textContent="Live";
+
+}
+
+
+function renderMarkets(){
+
+const keys=[
+"GOLD",
+"SILVER",
+"OIL"
+];
+
+$("marketsList").innerHTML=
+keys.map(key=>{
+
+const a=ASSETS[key];
+
+const p=prices[key]||0;
+
+const c=changes[key]||0;
+
+return`
+
+<div class="marketRow">
+
+<div class="marketLeft">
+
+<div class="marketIcon">
+${a.icon}
+</div>
+
+<div>
+
+<b>${a.name}</b>
+
+<br>
+
+<small style="color:var(--muted)">
+${a.symbol}
+</small>
+
+</div>
+
+</div>
+
+<div class="marketPrice">
+
+<div>${price(p)}</div>
+
+<div class="${c>=0?"green":"red"}">
+${c>=0?"+":""}${c.toFixed(2)}%
+</div>
+
+</div>
+
+</div>
+
+`;
+
+}).join("");
+
+}
+
+
+function setIntervalTF(tf,button){
+
+timeframe=tf;
+
+document
+.querySelectorAll(".tab")
+.forEach(x=>x.classList.remove("active"));
+
+button.classList.add("active");
+
+loadCandles();
+
+}
+
+
+async function loadCandles(){
+
+const asset=selected;
+
+if(!ASSETS[asset])return;
+
+$("globalStatus").textContent="Chart...";
+
+try{
+
+if(ASSETS[asset].type==="crypto"){
+
+await loadCryptoCandles(asset);
+
+}else{
+
+await loadYahooCandles(asset);
+
+}
+
+drawChart();
 
 }catch(e){
 
-render();
+candles=[];
+
+drawChart();
 
 }
 
+$("globalStatus").textContent="Live";
+
 }
+
+
+async function loadCryptoCandles(asset){
+
+const symbol=
+ASSETS[asset].binance;
+
+const interval=
+timeframe==="1d"?"1d":
+timeframe==="4h"?"4h":
+timeframe==="1h"?"1h":
+"15m";
+
+const url=
+"https://api.binance.com/api/v3/klines?symbol="+
+symbol+
+"&interval="+
+interval+
+"&limit=100";
+
+const r=
+await fetch(url,{cache:"no-store"});
+
+if(!r.ok)throw new Error();
+
+const data=
+await r.json();
+
+candles=data.map(x=>({
+
+time:Number(x[0]),
+open:Number(x[1]),
+high:Number(x[2]),
+low:Number(x[3]),
+close:Number(x[4]),
+volume:Number(x[5])
+
+}));
+
+}
+
+
+async function loadYahooCandles(asset){
+
+const range=
+timeframe==="1d"?"1mo":
+timeframe==="4h"?"1mo":
+timeframe==="1h"?"5d":
+"1d";
+
+const interval=
+timeframe==="1d"?"1d":
+timeframe==="4h"?"1h":
+timeframe==="1h"?"1h":
+"5m";
+
+const symbol=
+encodeURIComponent(
+ASSETS[asset].yahoo
+);
+
+const url=
+"https://query1.finance.yahoo.com/v8/finance/chart/"+
+symbol+
+"?range="+range+
+"&interval="+interval;
+
+const r=
+await fetch(url,{cache:"no-store"});
+
+if(!r.ok)throw new Error();
+
+const d=await r.json();
+
+const result=
+d.chart.result[0];
+
+const q=
+result.indicators.quote[0];
+
+candles=[];
+
+result.timestamp.forEach((t,i)=>{
+
+if(q.open[i]==null||
+q.high[i]==null||
+q.low[i]==null||
+q.close[i]==null)return;
+
+candles.push({
+
+time:t*1000,
+
+open:Number(q.open[i]),
+high:Number(q.high[i]),
+low:Number(q.low),
+close:Number(q.close[i]),
+volume:Number(q.volume[i]||0)
+
+});
+
+});
+
+}
+
 
 function drawChart(){
 
 const canvas=$("chart");
 
-if(!canvas)return;
+const ctx=
+canvas.getContext("2d");
 
-const ctx=canvas.getContext("2d");
+const w=
+canvas.clientWidth;
 
-const w=canvas.clientWidth;
-const h=canvas.clientHeight;
+const h=
+canvas.clientHeight;
 
-const dpr=window.devicePixelRatio||1;
+const dpr=
+window.devicePixelRatio||1;
 
 canvas.width=w*dpr;
+
 canvas.height=h*dpr;
 
-ctx.scale(dpr,dpr);
+ctx.setTransform(dpr,0,0,dpr,0,0);
 
 ctx.clearRect(0,0,w,h);
 
-const data=priceHistory.length?
-priceHistory.map(x=>x.price):
-[current];
 
-const min=Math.min(...data);
-const max=Math.max(...data);
+if(!candles.length){
 
-const range=max-min||0.01;
+ctx.fillStyle="#8da8b7";
+
+ctx.font="13px sans-serif";
+
+ctx.textAlign="center";
+
+ctx.fillText(
+"Chart data unavailable",
+w/2,
+h/2
+);
+
+return;
+
+}
+
+
+const left=8;
+const right=8;
+const top=12;
+const bottom=65;
+
+const chartH=
+h-bottom-top;
+
+const volumeH=38;
+
+const highs=
+candles.map(x=>x.high);
+
+const lows=
+candles.map(x=>x.low);
+
+const max=
+Math.max(...highs);
+
+const min=
+Math.min(...lows);
+
+const range=
+max-min||1;
+
+const step=
+(w-left-right)/candles.length;
+
+const candleW=
+Math.max(2,step*.62);
+
+
+function y(v){
+
+return top+
+((max-v)/range)*chartH;
+
+}
+
+
+/* grid */
+
+ctx.strokeStyle="rgba(141,168,183,.12)";
+ctx.lineWidth=1;
+
+for(let i=0;i<5;i++){
+
+const yy=
+top+(chartH/4)*i;
 
 ctx.beginPath();
 
-data.forEach((v,i)=>{
+ctx.moveTo(left,yy);
 
-const x=data.length===1?
-w/2:
-(i/(data.length-1))*w;
+ctx.lineTo(w-right,yy);
 
-const y=
-h-20-
-((v-min)/range)*(h-40);
-
-if(i===0)
-ctx.moveTo(x,y);
-else
-ctx.lineTo(x,y);
-
-});
-
-ctx.strokeStyle="#4da2ff";
-ctx.lineWidth=3;
 ctx.stroke();
 
 }
 
-function page(name,btn){
 
-document.querySelectorAll(".page")
-.forEach(x=>x.classList.remove("active"));
+/* candles */
 
-$(name).classList.add("active");
+candles.forEach((c,i)=>{
 
-document.querySelectorAll("nav button")
-.forEach(x=>x.classList.remove("active"));
+const x=
+left+
+i*step+
+step/2;
 
-btn.classList.add("active");
+const openY=y(c.open);
+const closeY=y(c.close);
+const highY=y(c.high);
+const lowY=y(c.low);
 
-window.scrollTo(0,0);
+const up=
+c.close>=c.open;
+
+ctx.strokeStyle=
+up?"#31d2a4":"#ff6b6b";
+
+ctx.fillStyle=
+up?"#31d2a4":"#ff6b6b";
+
+ctx.lineWidth=1;
+
+ctx.beginPath();
+
+ctx.moveTo(x,highY);
+ctx.lineTo(x,lowY);
+
+ctx.stroke();
+
+const bodyTop=
+Math.min(openY,closeY);
+
+const bodyHeight=
+Math.max(1,Math.abs(closeY-openY));
+
+ctx.fillRect(
+x-candleW/2,
+bodyTop,
+candleW,
+bodyHeight
+);
+
+});
+
+
+/* volume */
+
+const maxVol=
+Math.max(...candles.map(x=>x.volume),1);
+
+candles.forEach((c,i)=>{
+
+const x=
+left+i*step+step/2;
+
+const vh=
+(c.volume/maxVol)*volumeH;
+
+ctx.fillStyle=
+c.close>=c.open?
+"rgba(49,210,164,.35)":
+"rgba(255,107,107,.35)";
+
+ctx.fillRect(
+x-candleW/2,
+h-vh-8,
+candleW,
+vh
+);
+
+});
+
+
+/* price labels */
+
+ctx.fillStyle="#8da8b7";
+
+ctx.font="10px monospace";
+
+ctx.textAlign="right";
+
+for(let i=0;i<5;i++){
+
+const v=
+max-(range/4)*i;
+
+ctx.fillText(
+price(v),
+w-6,
+top+(chartH/4)*i+3
+);
 
 }
 
+
+$("chartLeft").textContent=
+new Date(candles[0].time).toLocaleString();
+
+$("chartRight").textContent=
+new Date(candles[candles.length-1].time).toLocaleString();
+
+}
+
+
 function exportData(){
 
-const data=JSON.stringify(buys,null,2);
+const data=
+JSON.stringify(purchases,null,2);
 
-const blob=new Blob(
+const blob=
+new Blob(
 [data],
 {type:"application/json"}
 );
 
-const a=document.createElement("a");
+const a=
+document.createElement("a");
 
-a.href=URL.createObjectURL(blob);
+a.href=
+URL.createObjectURL(blob);
 
-a.download="sui-backup.json";
+a.download=
+"market-tracker-backup.json";
 
 a.click();
 
@@ -756,36 +1968,40 @@ URL.revokeObjectURL(a.href);
 
 }
 
-function importData(e){
 
-const file=e.target.files[0];
+function importData(event){
+
+const file=
+event.target.files[0];
 
 if(!file)return;
 
-const reader=new FileReader();
+const reader=
+new FileReader();
 
 reader.onload=function(){
 
 try{
 
-const data=JSON.parse(
-reader.result
-);
+const data=
+JSON.parse(reader.result);
 
 if(!Array.isArray(data))
 throw new Error();
 
-buys=data;
+purchases=data;
 
 save();
 
-render();
+renderHistory();
+
+renderPortfolio();
 
 alert(
-"Backup imported successfully ✅"
+"Backup imported successfully."
 );
 
-}catch(err){
+}catch(e){
 
 alert(
 "Invalid backup file."
@@ -799,17 +2015,69 @@ reader.readAsText(file);
 
 }
 
+
+function page(name,button){
+
+document
+.querySelectorAll(".page")
+.forEach(x=>
+x.classList.remove("active")
+);
+
+$(name).classList.add("active");
+
+document
+.querySelectorAll("nav button")
+.forEach(x=>
+x.classList.remove("active")
+);
+
+button.classList.add("active");
+
+window.scrollTo(0,0);
+
+if(name==="home"){
+
+renderAssets();
+renderPortfolio();
+loadCandles();
+
+}
+
+if(name==="markets")
+renderMarkets();
+
+if(name==="portfolio")
+renderHistory();
+
+if(name==="dca")
+renderDCA();
+
+}
+
+
 window.addEventListener(
 "resize",
 drawChart
 );
 
-render();
 
-livePrice();
+/* INITIAL */
+
+renderAssets();
+
+renderHistory();
+
+renderMarkets();
+
+renderDCA();
+
+renderPortfolio();
+
+refreshAll();
 
 setInterval(
-livePrice,
+refreshAll,
 60000
 );
 
